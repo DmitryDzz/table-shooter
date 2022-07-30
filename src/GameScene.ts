@@ -44,7 +44,8 @@ export abstract class GameScene extends Scene {
             throw new Error("Cannot create environment");
         }
 
-        this.rootNode = new TransformNode("guiRootNode", this);
+        this.rootNode = new TransformNode("rootNode", this);
+        this.rootNode.scaling = createVector3({x: 0.02, y: 0.02, z: 0.02});
 
         // const dome = new PhotoDome("skybox",Env.scene.skyboxTextureFile,{resolution: 32,size: 30},this.scene);
         // dome.parent = this.guiRootNode;

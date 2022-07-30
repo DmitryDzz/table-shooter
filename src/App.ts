@@ -1,8 +1,9 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import {Engine} from "@babylonjs/core";
+import {CannonJSPlugin, Engine} from "@babylonjs/core";
 import {SceneSwitcher} from "./SceneSwitcher";
+import {createVector3} from "./Math";
 
 class App {
     constructor() {
@@ -10,24 +11,32 @@ class App {
         const canvas = document.createElement("canvas");
         canvas.style.width = "100%";
         canvas.style.height = "100%";
-        // canvas.width = window.innerWidth;
-        // canvas.height = window.innerHeight;
         canvas.id = "gameCanvas";
         document.body.appendChild(canvas);
 
-        // initialize babylon scene and engine
         const engine = new Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true});
+
+        // Physics engine:
+        // const gravity = createVector3({x: 0, y: -9.81, z: 0});
+        // const physicsPlugin = new CannonJSPlugin();
+
         const sceneSwitcher = new SceneSwitcher(engine, canvas);
+
+        window.addEventListener("load", async () => {
+            await sceneSwitcher.loadFirstSceneAsync();
+        });
 
         // hide/show the Inspector
         window.addEventListener("keydown", async (ev) => {
             const scene = sceneSwitcher.currentScene;
-            // Shift+Ctrl+Alt+I
             if (!ev.shiftKey && !ev.ctrlKey && !ev.altKey && ev.code === "KeyI") {
                 if (scene.debugLayer.isVisible()) {
                     scene.debugLayer.hide();
                 } else {
-                    await scene.debugLayer.show();
+                    await scene.debugLayer.show({
+                        embedMode: false,
+                        overlay: true,
+                    });
                 }
             }
 
