@@ -8,6 +8,7 @@ export class Player {
     private _position: Vector3 = createVector3({x: 0, y: -20 + 1, z: 20});
 
     constructor(scene: GameScene) {
+        const color: Color4 = Color4.FromHexString("#ffb703");
         this._mesh = MeshBuilder.CreateBox(
             "Player",
             {
@@ -15,7 +16,7 @@ export class Player {
                 depth: 0.35,
                 height: 2,
                 faceColors: [
-                    Color4.FromHexString("ffb703")
+                    color, color, color, color, color, color,
                 ]
             },
             scene
