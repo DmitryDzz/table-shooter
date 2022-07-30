@@ -14,13 +14,14 @@ export abstract class GameScene extends Scene {
     public readonly camera: UniversalCamera;
     public readonly rootNode: TransformNode;
 
-    constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
+    protected constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
         super(engine, options);
 
         // Physics engine:
-        // const gravity = createVector3({x: 0, y: -9.81, z: 0});
-        // const physicsPlugin = new CannonJSPlugin();
-        // this.enablePhysics(gravity, physicsPlugin);
+        const gravity = createVector3({x: 0, y: -9.81, z: 0});
+        const physicsPlugin = new CannonJSPlugin();
+        this.enablePhysics(gravity, physicsPlugin);
+        // this.enablePhysics(gravity);
 
         this.camera = new UniversalCamera('camera', createVector3(Env.camera.position), this);
         this.camera.minZ = Env.camera.near;

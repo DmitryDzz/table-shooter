@@ -1,4 +1,12 @@
-import {AbstractMesh, Engine, SceneLoader, SceneOptions, TransformNode, Vector3} from "@babylonjs/core";
+import {
+    AbstractMesh,
+    Engine,
+    PhysicsImpostor,
+    SceneLoader,
+    SceneOptions,
+    TransformNode,
+    Vector3
+} from "@babylonjs/core";
 import {GameScene} from "./GameScene";
 import {createVector3} from "./Math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
@@ -66,6 +74,22 @@ export class Level1 extends GameScene {
         streetlight.rotate(Vector3.Up(), Math.PI);
 
 
+
+        // Physics:
+        for (let mesh of loadedAsset.meshes) {
+            this._getRidOfParentNodes(mesh);
+        }
+        ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor,
+            {mass: 0, restitution: 0.1}, this);
+
+
         new Player(this);
+    }
+
+    private _getRidOfParentNodes(mesh: AbstractMesh) {
+        const worldMatrix = mesh.computeWorldMatrix(true).clone();
+        mesh.parent = null;
+        mesh.freezeWorldMatrix(worldMatrix, true);
+        mesh.unfreezeWorldMatrix();
     }
 }

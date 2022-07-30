@@ -13,6 +13,8 @@ class App {
         canvas.id = "gameCanvas";
         document.body.appendChild(canvas);
 
+        window.CANNON = require("cannon");
+
         const engine = new Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true});
         const sceneSwitcher = new SceneSwitcher(engine, canvas);
 
