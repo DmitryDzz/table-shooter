@@ -1,47 +1,47 @@
-import {Engine, Scene} from "@babylonjs/core";
+import {Engine} from "@babylonjs/core";
 import {Level1} from "./Level1";
 import {Level2} from "./Level2";
 import {GameScene} from "./GameScene";
 
 export class SceneSwitcher {
-    private readonly _scenes: GameScene[] = [];
-
+    private _currentScene: GameScene | null = null;
     private _levelIndex: number = 0;
 
-    private readonly _levelBuilders: {[index: number]: () => void} = {};
+    private readonly _levelBuilders: {[index: number]: () => GameScene} = {};
 
     constructor(engine: Engine, canvas: HTMLCanvasElement) {
-        this._levelBuilders[0] = () => {
-            new Level1(engine, canvas);
+        // A dictionary: [index]: <level constructor>
+        this._levelBuilders[0] = (): GameScene => {
+            return new Level1(engine, canvas);
         };
-        this._levelBuilders[1] = () => {
-            new Level2(engine, canvas);
+        this._levelBuilders[1] = (): GameScene => {
+            return new Level2(engine, canvas);
         };
-
-        //TODO DZZ Не создавать сразу!
-        this._scenes.push(
-            new Level1(engine, canvas),
-        );
-        this._scenes.push(
-            new Level2(engine, canvas),
-        );
     }
 
     async loadFirstSceneAsync(): Promise<void> {
-        await this.currentScene.finalizeAsync();
+        await this.currentScene?.dispose();
+        this._currentScene = null;
+
         this._levelIndex = 0;
-        await this.currentScene.initializeAsync();
+
+        this._currentScene = this._levelBuilders[this._levelIndex]();
+        await this._currentScene.initializeAsync();
     }
 
     async loadNextSceneAsync(): Promise<void> {
-        await this.currentScene.finalizeAsync();
+        await this.currentScene?.dispose();
+        this._currentScene = null;
+
         this._levelIndex++;
-        if (this._levelIndex >= this._scenes.length)
+        if (this._levelIndex >= Object.keys(this._levelBuilders).length)
             this._levelIndex = 0;
+
+        this._currentScene = this._levelBuilders[this._levelIndex]();
         await this.currentScene.initializeAsync();
     }
 
-    get currentScene() {
-        return this._scenes[this._levelIndex];
+    get currentScene(): GameScene | null {
+        return this._currentScene;
     }
 }

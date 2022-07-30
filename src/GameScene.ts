@@ -1,4 +1,5 @@
 import {
+    CannonJSPlugin,
     Engine,
     HemisphericLight,
     Scene,
@@ -15,6 +16,11 @@ export abstract class GameScene extends Scene {
 
     constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
         super(engine, options);
+
+        // Physics engine:
+        // const gravity = createVector3({x: 0, y: -9.81, z: 0});
+        // const physicsPlugin = new CannonJSPlugin();
+        // this.enablePhysics(gravity, physicsPlugin);
 
         this.camera = new UniversalCamera('camera', createVector3(Env.camera.position), this);
         this.camera.minZ = Env.camera.near;
@@ -46,16 +52,7 @@ export abstract class GameScene extends Scene {
 
         this.rootNode = new TransformNode("rootNode", this);
         this.rootNode.scaling = createVector3({x: 0.02, y: 0.02, z: 0.02});
-
-        // const dome = new PhotoDome("skybox",Env.scene.skyboxTextureFile,{resolution: 32,size: 30},this.scene);
-        // dome.parent = this.guiRootNode;
-        // dome.mesh.name = MeshName.backgroundSkybox;
-
-        // const camera: ArcRotateCamera = new ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, Vector3.Zero(), this);
-        // camera.attachControl(canvas, true);
-        // new HemisphericLight("light1", new Vector3(1, 1, 0), this);
     }
 
     abstract initializeAsync(): Promise<void>;
-    abstract finalizeAsync(): Promise<void>;
 }

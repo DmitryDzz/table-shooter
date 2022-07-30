@@ -2,6 +2,7 @@ import {AbstractMesh, Engine, SceneLoader, SceneOptions, TransformNode, Vector3}
 import {GameScene} from "./GameScene";
 import {createVector3} from "./Math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
+import {Player} from "./Player";
 
 export class Level1 extends GameScene {
     constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
@@ -63,8 +64,8 @@ export class Level1 extends GameScene {
         const streetlight: AbstractMesh = loadedAsset.meshes.find(x => x.name === "Streetlight");
         streetlight.position = createVector3({x: 1, y: -20, z: 27});
         streetlight.rotate(Vector3.Up(), Math.PI);
-    }
 
-    async finalizeAsync(): Promise<void> {
+
+        new Player(this);
     }
 }

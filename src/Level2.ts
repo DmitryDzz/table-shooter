@@ -14,9 +14,6 @@ export class Level2 extends GameScene {
         box.position = createVector3({x: 0, y: 0, z: 2});
     }
 
-    async finalizeAsync(): Promise<void> {
-    }
-
     async initializeAsync(): Promise<void> {
     }
 }

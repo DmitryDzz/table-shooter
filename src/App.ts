@@ -1,9 +1,8 @@
 import "@babylonjs/core/Debug/debugLayer";
 import "@babylonjs/inspector";
 import "@babylonjs/loaders/glTF";
-import {CannonJSPlugin, Engine} from "@babylonjs/core";
+import {Engine} from "@babylonjs/core";
 import {SceneSwitcher} from "./SceneSwitcher";
-import {createVector3} from "./Math";
 
 class App {
     constructor() {
@@ -15,11 +14,6 @@ class App {
         document.body.appendChild(canvas);
 
         const engine = new Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true});
-
-        // Physics engine:
-        // const gravity = createVector3({x: 0, y: -9.81, z: 0});
-        // const physicsPlugin = new CannonJSPlugin();
-
         const sceneSwitcher = new SceneSwitcher(engine, canvas);
 
         window.addEventListener("load", async () => {
@@ -53,7 +47,7 @@ class App {
 
         // run the main render loop
         engine.runRenderLoop(() => {
-            sceneSwitcher.currentScene.render();
+            sceneSwitcher.currentScene?.render();
         });
     }
 }
