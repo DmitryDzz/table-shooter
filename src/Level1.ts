@@ -85,7 +85,7 @@ export class Level1 extends GameScene {
 
         const player = new Player(this);
         await player.initializeAsync();
-        // player.position = new Vector3(0, -0.2, 0.4);
+        player.position = player.position.add(new Vector3(-12, 0, 0));
     }
 
     private _getRidOfParentNodes(mesh: AbstractMesh) {
