@@ -26,7 +26,9 @@ export abstract class GameScene extends Scene {
         this.camera = new UniversalCamera('camera', createVector3(Env.camera.position), this);
         this.camera.minZ = Env.camera.near;
         this.camera.maxZ = Env.camera.far;
-        this.camera.setTarget(createVector3(Env.camera.defaultDirection).add(createVector3(Env.camera.position)));
+        this.camera.setTarget(createVector3(Env.camera.defaultDirection)
+            .add(createVector3({x: 0, y: -0.5, z: 0})));
+            //.add(createVector3(Env.camera.position)));
         this.camera.attachControl(canvas);
 
         // Turn on touch on mobile phones:

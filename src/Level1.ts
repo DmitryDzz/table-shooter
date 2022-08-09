@@ -80,10 +80,12 @@ export class Level1 extends GameScene {
             this._getRidOfParentNodes(mesh);
         }
         ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor,
-            {mass: 0, restitution: 0.1}, this);
+            {mass: 0, restitution: 0}, this);
 
 
-        new Player(this);
+        const player = new Player(this);
+        await player.initializeAsync();
+        // player.position = new Vector3(0, -0.2, 0.4);
     }
 
     private _getRidOfParentNodes(mesh: AbstractMesh) {
