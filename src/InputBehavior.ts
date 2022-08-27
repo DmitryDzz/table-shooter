@@ -3,6 +3,8 @@ import {Observer} from "@babylonjs/core/Misc/observable";
 import {PhysicsImpostor} from "@babylonjs/core/Physics/physicsImpostor";
 
 export class InputBehavior implements Behavior<TransformNode> {
+    private static readonly _p2rad = 0.01;
+
     private _target: TransformNode;
 
     readonly name: string;
@@ -14,6 +16,10 @@ export class InputBehavior implements Behavior<TransformNode> {
 
     private _isForward: boolean;
     private _isBackward: boolean;
+    private _isLeft: boolean;
+    private _isRight: boolean;
+
+    private _alpha?: number;
 
     constructor(scene: Scene, physicsImpostor: PhysicsImpostor) {
         this.name = "Player Input Behavior";
@@ -26,22 +32,29 @@ export class InputBehavior implements Behavior<TransformNode> {
 
         window.addEventListener("keydown", this._keydownHandler);
         window.addEventListener("keyup", this._keyupHandler);
+        window.addEventListener("pointermove", this._pointerMoveHandler);
 
         this._beforeRenderObserver = this._scene.onBeforeRenderObservable.add(() => {
+            this._target.rotation = new Vector3(0, this._alpha, 0);
+
+            const speedValue = 0.25;
+            const velocity = Vector3.Zero();
             if (this._isForward) {
-                this._physicsImpostor.friction = 0;
-                this._physicsImpostor.setLinearVelocity(new Vector3(0.25, 0, 0));
-                // console.log("=>");
-            } else if (this._isBackward) {
-                this._physicsImpostor.friction = 0;
-                this._physicsImpostor.setLinearVelocity(new Vector3(-0.25, 0, 0));
-                // console.log("<=");
-            } else if (!this._isForward && !this._isBackward) {
-                // const currentVelocity = this._physicsImpostor.getLinearVelocity();
-                // currentVelocity.y = 0;
-                // currentVelocity.z = 0;
-                // this._physicsImpostor.setLinearVelocity(currentVelocity);
-                this._physicsImpostor.friction = 1000000;
+                velocity.addInPlace(this._target.forward.scale(speedValue));
+            }
+            if (this._isBackward) {
+                velocity.addInPlace(this._target.forward.scale(-speedValue));
+            }
+            if (this._isLeft) {
+                velocity.addInPlace(this._target.right.scale(-speedValue));
+            }
+            if (this._isRight) {
+                velocity.addInPlace(this._target.right.scale(speedValue));
+            }
+            const isMoving = this._isForward || this._isRight || this._isLeft || this._isBackward;
+            this._physicsImpostor.friction = isMoving ? 0 : 1_000_000;
+            if (isMoving) {
+                this._physicsImpostor.setLinearVelocity(velocity);
             }
         });
     }
@@ -49,6 +62,7 @@ export class InputBehavior implements Behavior<TransformNode> {
     detach(): void {
         window.removeEventListener("keydown", this._keydownHandler);
         window.removeEventListener("keyup", this._keyupHandler);
+        window.removeEventListener("pointermove", this._pointerMoveHandler);
 
         if (this._beforeRenderObserver !== null)
             this._scene.onBeforeRenderObservable.remove(this._beforeRenderObserver);
@@ -57,13 +71,25 @@ export class InputBehavior implements Behavior<TransformNode> {
     init(): void {
     }
 
+    private _keyHandler = (ev: KeyboardEvent, isDown: boolean) => {
+        if (ev.key === "w") this._isForward = isDown;
+        if (ev.key === "s") this._isBackward = isDown;
+        if (ev.key === "a") this._isLeft = isDown;
+        if (ev.key === "d") this._isRight = isDown;
+    };
+
     private _keydownHandler = (ev: KeyboardEvent) => {
-        if (ev.key === "w") this._isForward = true;
-        if (ev.key === "s") this._isBackward = true;
+        this._keyHandler(ev, true);
     };
 
     private _keyupHandler = (ev: KeyboardEvent) => {
-        if (ev.key === "w") this._isForward = false;
-        if (ev.key === "s") this._isBackward = false;
+        this._keyHandler(ev, false);
     };
+
+    private _pointerMoveHandler = (ev: PointerEvent) => {
+        if (this._alpha === undefined) {
+            this._alpha = 0.0;
+        }
+        this._alpha += ev.movementX * InputBehavior._p2rad;
+    }
 }

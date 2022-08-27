@@ -3,6 +3,7 @@ import {GameScene} from "./GameScene";
 import {createVector3} from "./Math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
 import {InputBehavior} from "./InputBehavior";
+import {GamepadBehavior} from "./GamepadBehavior";
 
 export class Player {
     private readonly _scene: GameScene;
@@ -31,11 +32,11 @@ export class Player {
                 m.scaling.scaleInPlace(this._scaling);
                 m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass, friction: 0 }, this._scene);
 
-                const inputBehavior = new InputBehavior(this._scene, m.physicsImpostor);
-                m.addBehavior(inputBehavior, true);
-                // m.physicsImpostor.setDeltaPosition(new Vector3(0.5, 0.5, 0));
-                // m.physicsImpostor.setLinearVelocity(new Vector3(0.5, 0, 0));
-                // m.position.add(new Vector3(10, 0, 0));
+                // const inputBehavior = new InputBehavior(this._scene, m.physicsImpostor);
+                // m.addBehavior(inputBehavior, true);
+
+                const gamepadBehavior = new GamepadBehavior(this._scene, m.physicsImpostor);
+                m.addBehavior(gamepadBehavior, true);
             } else if (m.name === "body-collider") {
                 //TODO DZZ Если раскомментарить, то при падении меш покачивается. Может поиграть опциями?
                 //m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.NoImpostor, { mass: 0 }, this._scene);

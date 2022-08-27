@@ -36,6 +36,8 @@ export abstract class GameScene extends Scene {
         this.camera.inputs.attached.mouse.touchEnabled = true;
         // Disable camera zoom and rotation in Oculus Browser in 2D mode:
         this.camera.inputs.removeByType("FreeCameraTouchInput");
+        this.camera.inputs.removeByType("FreeCameraGamepadInput");
+        // console.dir(this.camera.inputs);
 
         this.light = new HemisphericLight('light', new Vector3(0, 1, 0), this);
 
