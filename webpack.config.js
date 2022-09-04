@@ -26,6 +26,10 @@ const main = {
     module: {
         rules: [
             {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
+            {
                 test: /\.tsx?$/,
                 exclude: /node_modules/,
                 use: "ts-loader",
@@ -50,7 +54,7 @@ const main = {
 };
 
 const worker = {
-    entry: path.resolve(appDirectory, "src/Worker.ts"),
+    entry: path.resolve(appDirectory, "src/worker.ts"),
     output: {
         filename: 'worker-[contenthash].js',
         path: path.resolve(__dirname, "./dist"),
@@ -72,6 +76,10 @@ const worker = {
     },
     module: {
         rules: [
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
+            },
             {
                 test: /\.tsx?$/,
                 loader: 'ts-loader',

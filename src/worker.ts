@@ -1,5 +1,5 @@
 import {MsgOffscreen, MsgResize, MsgToWorker} from "./messages";
-import {AppInitializer} from "./appInitializer";
+import {AppInitializer} from "./babylon/appInitializer";
 
 const scope = (globalThis as unknown) as DedicatedWorkerGlobalScope;
 

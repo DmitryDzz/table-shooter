@@ -15,7 +15,7 @@ class App {
             // @ts-ignore
             const offscreen = canvas.transferControlToOffscreen();
 
-            const worker = new Worker(new URL('./Worker.ts', import.meta.url));
+            const worker = new Worker(new URL('./worker.ts', import.meta.url));
             const msgOffscreen: MsgOffscreen = {type: "offscreen", payload: {canvas: offscreen}};
             worker.postMessage(msgOffscreen, [offscreen]);
 

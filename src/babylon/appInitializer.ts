@@ -1,5 +1,7 @@
+// import "@babylonjs/core/Debug/debugLayer";
+// import "@babylonjs/inspector";
 import {Engine} from "@babylonjs/core";
-import {SceneSwitcher} from "./SceneSwitcher";
+import {SceneSwitcher} from "./sceneSwitcher";
 
 export class AppInitializer {
     private _engine: Engine | undefined;

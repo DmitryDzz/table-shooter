@@ -6,8 +6,8 @@ import {
     SceneOptions, TransformNode, UniversalCamera,
     Vector3
 } from "@babylonjs/core";
-import {Env} from "./Env";
-import {createVector3} from "./Math";
+import {Env} from "./env";
+import {createVector3} from "./math";
 
 export abstract class GameScene extends Scene {
     public readonly light: HemisphericLight;

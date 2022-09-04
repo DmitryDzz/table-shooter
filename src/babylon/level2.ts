@@ -3,8 +3,8 @@ import {
     MeshBuilder,
     SceneOptions,
 } from "@babylonjs/core";
-import {GameScene} from "./GameScene";
-import {createVector3} from "./Math";
+import {GameScene} from "./gameScene";
+import {createVector3} from "./math";
 
 export class Level2 extends GameScene {
 

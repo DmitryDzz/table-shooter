@@ -1,7 +1,7 @@
 import {Engine} from "@babylonjs/core";
-import {Level1} from "./Level1";
-import {Level2} from "./Level2";
-import {GameScene} from "./GameScene";
+import {Level1} from "./level1";
+import {Level2} from "./level2";
+import {GameScene} from "./gameScene";
 
 export class SceneSwitcher {
     private _currentScene: GameScene | null = null;

@@ -1,6 +1,6 @@
 import {AbstractMesh, PhysicsImpostor, SceneLoader, Vector3} from "@babylonjs/core";
-import {GameScene} from "./GameScene";
-import {createVector3} from "./Math";
+import {GameScene} from "./gameScene";
+import {createVector3} from "./math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
 
 export class Player {
