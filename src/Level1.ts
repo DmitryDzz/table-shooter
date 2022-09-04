@@ -12,6 +12,9 @@ import {createVector3} from "./Math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
 import {Player} from "./Player";
 
+import "@babylonjs/loaders/glTF";
+import environmentGLB from "../public/assets/environment.glb";
+
 export class Level1 extends GameScene {
     constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
         super(engine, canvas, options);
@@ -19,7 +22,8 @@ export class Level1 extends GameScene {
 
     async initializeAsync(): Promise<void> {
         const loadedAsset: ISceneLoaderAsyncResult =
-            await SceneLoader.ImportMeshAsync(null, "./assets/", "environment.glb", this);
+            await SceneLoader.ImportMeshAsync(null, "", environmentGLB, this);
+            // await SceneLoader.ImportMeshAsync(null, "./assets/", "environment.glb", this);
         for (let mesh of loadedAsset.meshes) {
             mesh.parent = this.rootNode;
         }

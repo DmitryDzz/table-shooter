@@ -3,7 +3,7 @@ const fs = require("fs");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const appDirectory = fs.realpathSync(process.cwd());
 
-module.exports = {
+const main = {
     entry: path.resolve(appDirectory, "src/App.ts"), //path to the main .ts file
     output: {
         filename: "js/bundleName.js", //name for the js file that is created/compiled in memory
@@ -39,3 +39,71 @@ module.exports = {
     mode: "development",
     devtool: "source-map",
 };
+
+const worker = {
+    entry: path.resolve(appDirectory, "src/Worker.ts"),
+    output: {
+        filename: 'js/worker.bundleName.js',
+        clean: true,
+        // path: path.resolve(__dirname, 'dist'),
+        // publicPath: "dist/"
+    },
+    target: "webworker",
+    devtool: "source-map",
+    mode: "development",
+    resolve: {
+        modules: [
+            'src',
+            'node_modules'
+        ],
+        extensions: [
+            '.js',
+            '.ts',
+            '.tsx'
+        ],
+        plugins: [
+            // new HtmlWebpackPlugin({
+            //     inject: true,
+            //     template: path.resolve(appDirectory, "public/index.html"),
+            // }),
+        ],
+    },
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                options: {
+                    transpileOnly: true,
+                },
+            },
+            {
+                test: /\.(glb|gltf)$/,
+                use: [
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: "[path][name].[ext]?[hash]",
+                            // outputPath: 'assets/models/'
+                        },
+                    },
+                ],
+                type: "javascript/auto",
+            },
+            {
+                test: /\.(png|jpg|gif)$/i,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 8192,
+                        }
+                    },
+                ],
+                type: 'javascript/auto',
+            },
+        ],
+    },
+}
+
+module.exports = [main, worker];

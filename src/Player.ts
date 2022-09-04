@@ -2,8 +2,6 @@ import {AbstractMesh, PhysicsImpostor, SceneLoader, Vector3} from "@babylonjs/co
 import {GameScene} from "./GameScene";
 import {createVector3} from "./Math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
-import {InputBehavior} from "./InputBehavior";
-import {GamepadBehavior} from "./GamepadBehavior";
 
 export class Player {
     private readonly _scene: GameScene;
@@ -35,8 +33,8 @@ export class Player {
                 // const inputBehavior = new InputBehavior(this._scene, m.physicsImpostor);
                 // m.addBehavior(inputBehavior, true);
 
-                const gamepadBehavior = new GamepadBehavior(this._scene, m.physicsImpostor);
-                m.addBehavior(gamepadBehavior, true);
+                // const gamepadBehavior = new GamepadBehavior(this._scene, m.physicsImpostor);
+                // m.addBehavior(gamepadBehavior, true);
             } else if (m.name === "body-collider") {
                 //TODO DZZ Если раскомментарить, то при падении меш покачивается. Может поиграть опциями?
                 //m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.NoImpostor, { mass: 0 }, this._scene);
@@ -51,10 +49,6 @@ export class Player {
     set position(value: Vector3) {
         this._position = value.clone();
         this._mesh.position = this._position.scale(this._scaling);
-    }
-
-    update() {
-
     }
 
     // private _afterPhysicsStep = (impostor: PhysicsImpostor): void => {
