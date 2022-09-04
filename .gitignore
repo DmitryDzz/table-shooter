@@ -4,6 +4,6 @@
 .parcel-cache
 .env.dev
 .env
-demo.live
-node_modules
-build
+
+node_modules/
+dist/

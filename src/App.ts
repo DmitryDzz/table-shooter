@@ -5,6 +5,8 @@ import {MsgInspector, MsgLoad, MsgNextScene, MsgOffscreen, MsgResize} from "./me
 
 class App {
     constructor() {
+        console.log("%cUnnamed Shooter App", "background: lime");
+
         // create the canvas html element and attach it to the webpage
         const canvas: HTMLCanvasElement = document.createElement("canvas");
         canvas.style.width = "100%";

@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "ESNext",
+    "target": "ES2022",
+    "module": "ES2022",
     "moduleResolution": "node",
     "noResolve": false,
     "noImplicitAny": false,
     "sourceMap": true,
-    "preserveConstEnums":true,
+    "preserveConstEnums": true,
     "lib": [
       "webworker",
-      "dom",
-      "es6"
+      "DOM",
+      "ES2021"
     ],
-    "rootDir": "src"
+    "rootDir": "src",
   }
 }

@@ -3,6 +3,8 @@ import {AppInitializer} from "./appInitializer";
 
 const scope = (globalThis as unknown) as DedicatedWorkerGlobalScope;
 
+console.log("%cUnnamed Shooter Worker", "background: yellowgreen");
+
 const appInitializer = new AppInitializer();
 
 globalThis.CANNON = require("cannon");
