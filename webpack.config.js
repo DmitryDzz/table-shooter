@@ -5,7 +5,7 @@ const appDirectory = fs.realpathSync(process.cwd());
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const main = {
-    entry: path.resolve(appDirectory, "src/App.ts"),
+    entry: path.resolve(appDirectory, "src/app.ts"),
     output: {
         filename: "main-[contenthash].js",
         path: path.resolve(__dirname, "./dist"),

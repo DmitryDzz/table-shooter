@@ -19,15 +19,20 @@ class App {
             const msgOffscreen: MsgOffscreen = {type: "offscreen", payload: {canvas: offscreen}};
             worker.postMessage(msgOffscreen, [offscreen]);
 
-            window.addEventListener("resize", () => {
+            const resizeHandler = () => {
                 const msgResize: MsgResize =
                     {type: "resize", payload: {width: window.innerWidth, height: window.innerHeight}};
                 worker.postMessage(msgResize);
-            });
+            };
+
+            window.addEventListener("resize", resizeHandler);
 
             window.addEventListener("load", () => {
                 const msgLoad: MsgLoad = {type: "loadFirstScene"};
                 worker.postMessage(msgLoad);
+
+                // To update resolution:
+                resizeHandler();
             });
 
             window.addEventListener("keydown", async (ev) => {
