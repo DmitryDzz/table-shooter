@@ -6,11 +6,10 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const main = {
     entry: path.resolve(appDirectory, "src/App.ts"),
-    // entry: "./src/App.ts",
     output: {
         filename: "main-[contenthash].js",
         path: path.resolve(__dirname, "./dist"),
-        // clean: true,
+        clean: true,
     },
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
@@ -44,7 +43,6 @@ const main = {
     plugins: [
         new HtmlWebpackPlugin({
             inject: true,
-            template: path.resolve(appDirectory, "public/index.html"),
         })
     ],
     mode: "development",
@@ -53,11 +51,10 @@ const main = {
 
 const worker = {
     entry: path.resolve(appDirectory, "src/Worker.ts"),
-    // entry: "./src/Worker.ts",
     output: {
         filename: 'worker-[contenthash].js',
         path: path.resolve(__dirname, "./dist"),
-        // clean: true,
+        clean: true,
     },
     plugins: [new HtmlWebpackPlugin(
         {
@@ -72,12 +69,6 @@ const worker = {
             'node_modules'
         ],
         extensions: [".tsx", ".ts", ".js"],
-        // plugins: [
-        //     new HtmlWebpackPlugin({
-        //         inject: true,
-        //         template: path.resolve(appDirectory, "public/index.html"),
-        //     }),
-        // ],
     },
     module: {
         rules: [
