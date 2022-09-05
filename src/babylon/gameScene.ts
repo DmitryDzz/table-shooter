@@ -8,6 +8,7 @@ import {
 } from "@babylonjs/core";
 import {Env} from "./env";
 import {createVector3} from "./math";
+import {GamepadState} from "../messages";
 
 export abstract class GameScene extends Scene {
     public readonly light: HemisphericLight;
@@ -60,4 +61,6 @@ export abstract class GameScene extends Scene {
     }
 
     abstract initializeAsync(): Promise<void>;
+
+    abstract setGamepadState(state: GamepadState): void;
 }

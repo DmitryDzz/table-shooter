@@ -5,6 +5,7 @@ import {
 } from "@babylonjs/core";
 import {GameScene} from "./gameScene";
 import {createVector3} from "./math";
+import {GamepadState} from "../messages";
 
 export class Level2 extends GameScene {
 
@@ -15,5 +16,8 @@ export class Level2 extends GameScene {
     }
 
     async initializeAsync(): Promise<void> {
+    }
+
+    setGamepadState(_state: GamepadState): void {
     }
 }

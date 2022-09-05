@@ -1,7 +1,6 @@
-// import "@babylonjs/core/Debug/debugLayer";
-// import "@babylonjs/inspector";
 import {Engine} from "@babylonjs/core";
 import {SceneSwitcher} from "./sceneSwitcher";
+import {GameScene} from "./gameScene";
 
 export class AppInitializer {
     private _engine: Engine | undefined;
@@ -42,5 +41,9 @@ export class AppInitializer {
                 overlay: true,
             });
         }
+    }
+
+    get currentScene(): GameScene | null {
+        return this._sceneSwitcher.currentScene;
     }
 }

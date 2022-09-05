@@ -14,8 +14,11 @@ import {Player} from "./player";
 
 import "@babylonjs/loaders/glTF";
 import environmentGLB from "../../public/assets/environment.glb";
+import {GamepadState} from "../messages";
 
 export class Level1 extends GameScene {
+    private _player?: Player = undefined;
+
     constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
         super(engine, canvas, options);
     }
@@ -87,9 +90,9 @@ export class Level1 extends GameScene {
             {mass: 0, restitution: 0}, this);
 
 
-        const player = new Player(this);
-        await player.initializeAsync();
-        player.position = player.position.add(new Vector3(-12, 0, 0));
+        this._player = new Player(this);
+        await this._player.initializeAsync();
+        this._player.position = this._player.position.add(new Vector3(-12, 0, 0));
     }
 
     private _getRidOfParentNodes(mesh: AbstractMesh) {
@@ -97,5 +100,9 @@ export class Level1 extends GameScene {
         mesh.parent = null;
         mesh.freezeWorldMatrix(worldMatrix, true);
         mesh.unfreezeWorldMatrix();
+    }
+
+    setGamepadState(state: GamepadState) {
+        this._player?.setGamepadState(state);
     }
 }

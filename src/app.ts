@@ -1,6 +1,9 @@
 import {MsgInspector, MsgLoad, MsgNextScene, MsgOffscreen, MsgResize} from "./messages";
+import {GamepadInput} from "./input/gamepadInput";
 
 class App {
+    readonly worker: Worker;
+
     constructor() {
         console.log("%cUnnamed Shooter App", "background: lime");
 
@@ -15,21 +18,21 @@ class App {
             // @ts-ignore
             const offscreen = canvas.transferControlToOffscreen();
 
-            const worker = new Worker(new URL('./worker.ts', import.meta.url));
+            this.worker = new Worker(new URL('./worker.ts', import.meta.url));
             const msgOffscreen: MsgOffscreen = {type: "offscreen", payload: {canvas: offscreen}};
-            worker.postMessage(msgOffscreen, [offscreen]);
+            this.worker.postMessage(msgOffscreen, [offscreen]);
 
             const resizeHandler = () => {
                 const msgResize: MsgResize =
                     {type: "resize", payload: {width: window.innerWidth, height: window.innerHeight}};
-                worker.postMessage(msgResize);
+                this.worker.postMessage(msgResize);
             };
 
             window.addEventListener("resize", resizeHandler);
 
             window.addEventListener("load", () => {
                 const msgLoad: MsgLoad = {type: "loadFirstScene"};
-                worker.postMessage(msgLoad);
+                this.worker.postMessage(msgLoad);
 
                 // To update resolution:
                 resizeHandler();
@@ -39,12 +42,12 @@ class App {
                 // Hide/show the Inspector:
                 if (!ev.shiftKey && !ev.ctrlKey && !ev.altKey && ev.code === "KeyI") {
                     const msgInspector: MsgInspector = {type: "inspector"};
-                    worker.postMessage(msgInspector);
+                    this.worker.postMessage(msgInspector);
                 }
                 // Load next scene:
                 if (!ev.shiftKey && !ev.ctrlKey && !ev.altKey && ev.code === "KeyN") {
                     const msgNextScene: MsgNextScene = {type: "loadNextScene"};
-                    worker.postMessage(msgNextScene);
+                    this.worker.postMessage(msgNextScene);
                 }
             });
         } else {
@@ -96,4 +99,11 @@ class App {
     }
 }
 
-new App();
+const app = new App();
+
+const gamepadInput = new GamepadInput(app.worker);
+const updateHandler = () => {
+    gamepadInput.update();
+    requestAnimationFrame(updateHandler);
+}
+updateHandler();

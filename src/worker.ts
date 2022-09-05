@@ -1,4 +1,4 @@
-import {MsgOffscreen, MsgResize, MsgToWorker} from "./messages";
+import {MsgGamepad, MsgOffscreen, MsgResize, MsgToWorker} from "./messages";
 import {AppInitializer} from "./babylon/appInitializer";
 
 const scope = (globalThis as unknown) as DedicatedWorkerGlobalScope;
@@ -27,6 +27,10 @@ scope.onmessage = async (ev: MessageEvent<MsgToWorker>) => {
             break;
         case "inspector":
             await appInitializer.switchInspector();
+            break;
+        case "gamepad":
+            const msgGamepad: MsgGamepad = ev.data;
+            appInitializer.currentScene.setGamepadState(msgGamepad.payload.state);
             break;
     }
 }

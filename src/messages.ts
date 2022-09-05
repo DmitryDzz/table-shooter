@@ -1,3 +1,14 @@
+export interface Vector {
+    x: number;
+    y: number;
+    z: number;
+}
+
+export interface GamepadState {
+    moveVector: Vector;
+    lookVector: Vector;
+}
+
 export type MsgOffscreen = {
     type: "offscreen";
     payload: {
@@ -27,4 +38,11 @@ export type MsgInspector = {
     type: "inspector";
 }
 
-export type MsgToWorker = MsgOffscreen | MsgResize | MsgLoad | MsgInspector | MsgNextScene;
+export type MsgGamepad = {
+    type: "gamepad";
+    payload: {
+        state: GamepadState;
+    }
+}
+
+export type MsgToWorker = MsgOffscreen | MsgResize | MsgLoad | MsgInspector | MsgNextScene | MsgGamepad;
