@@ -113,7 +113,7 @@ class GamepadInput {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "main-" + "c10c6a3d75eb7ac37676" + ".js";
+/******/ 			return "main-" + "1da97c14e77cdbc41aae" + ".js";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -299,4 +299,4 @@ updateHandler();
 
 /******/ })()
 ;
-//# sourceMappingURL=main-61fe0dfb8e5ca5e6ede5.js.map
+//# sourceMappingURL=main-92787a137d9efc11f59c.js.map

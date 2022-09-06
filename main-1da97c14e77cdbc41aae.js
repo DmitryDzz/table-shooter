@@ -346,6 +346,8 @@ class Player {
         return v.x * v.x + v.y * v.y + v.z * v.z;
     }
     setGamepadState({ moveVector, lookVector }) {
+        if (this._mesh?.physicsImpostor === undefined)
+            return;
         const isMoving = this._lengthSquared(moveVector) > 0.01;
         const isFacing = this._lengthSquared(lookVector) > 0.01;
         let faceVector = null;
@@ -684,4 +686,4 @@ module.exports = "assets/75d64c1807a129a70e00.glb";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main-c10c6a3d75eb7ac37676.js.map
+//# sourceMappingURL=main-1da97c14e77cdbc41aae.js.map
