@@ -455,7 +455,9 @@ scope.onmessage = async (ev) => {
             break;
         case "gamepad":
             const msgGamepad = ev.data;
-            appInitializer.currentScene.setGamepadState(msgGamepad.payload.state);
+            if (appInitializer.currentScene !== null) {
+                appInitializer.currentScene.setGamepadState(msgGamepad.payload.state);
+            }
             break;
     }
 };
@@ -682,4 +684,4 @@ module.exports = "assets/75d64c1807a129a70e00.glb";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main-0824f429dee3810baf0c.js.map
+//# sourceMappingURL=main-c10c6a3d75eb7ac37676.js.map
