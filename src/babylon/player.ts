@@ -3,6 +3,8 @@ import {GameScene} from "./gameScene";
 import {createVector3} from "./math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
 import {GamepadState, Vector} from "../messages";
+import playerGLB from "../../public/assets/player.glb";
+
 
 export class Player {
     private readonly _scene: GameScene;
@@ -17,7 +19,7 @@ export class Player {
 
     async initializeAsync(): Promise<void> {
         const loadedAsset: ISceneLoaderAsyncResult =
-            await SceneLoader.ImportMeshAsync(null, "./assets/", "player.glb", this._scene);
+            await SceneLoader.ImportMeshAsync(null, "", playerGLB, this._scene);
 
         const position = this._position;
         const mass = 1;
@@ -57,6 +59,8 @@ export class Player {
     }
 
     setGamepadState({moveVector, lookVector}: GamepadState) {
+        if (this._mesh?.physicsImpostor === undefined) return;
+
         const isMoving = this._lengthSquared(moveVector) > 0.01;
         const isFacing = this._lengthSquared(lookVector) > 0.01;
         let faceVector: Vector3 | null = null;
