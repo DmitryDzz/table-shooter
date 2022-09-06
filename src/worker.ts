@@ -30,7 +30,9 @@ scope.onmessage = async (ev: MessageEvent<MsgToWorker>) => {
             break;
         case "gamepad":
             const msgGamepad: MsgGamepad = ev.data;
-            appInitializer.currentScene.setGamepadState(msgGamepad.payload.state);
+            if (appInitializer.currentScene !== null) {
+                appInitializer.currentScene.setGamepadState(msgGamepad.payload.state);
+            }
             break;
     }
 }
