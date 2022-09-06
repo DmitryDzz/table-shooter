@@ -301,6 +301,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babylonjs/core */ "./node_modules/@babylonjs/core/index.js");
 /* harmony import */ var _math__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./math */ "./src/babylon/math.ts");
+/* harmony import */ var _public_assets_player_glb__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../public/assets/player.glb */ "./public/assets/player.glb");
+
 
 
 class Player {
@@ -312,7 +314,7 @@ class Player {
         this._scene = scene;
     }
     async initializeAsync() {
-        const loadedAsset = await _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.SceneLoader.ImportMeshAsync(null, "./assets/", "player.glb", this._scene);
+        const loadedAsset = await _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.SceneLoader.ImportMeshAsync(null, "", _public_assets_player_glb__WEBPACK_IMPORTED_MODULE_2__, this._scene);
         const position = this._position;
         const mass = 1;
         loadedAsset.meshes.forEach(m => {
@@ -474,6 +476,16 @@ scope.onmessage = async (ev) => {
 /***/ ((module) => {
 
 module.exports = "assets/75d64c1807a129a70e00.glb";
+
+/***/ }),
+
+/***/ "./public/assets/player.glb":
+/*!**********************************!*\
+  !*** ./public/assets/player.glb ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = "assets/aab888a9e867345ac95f.glb";
 
 /***/ })
 
@@ -686,4 +698,4 @@ module.exports = "assets/75d64c1807a129a70e00.glb";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main-1da97c14e77cdbc41aae.js.map
+//# sourceMappingURL=main-2ed7a19240c4c8ec49ce.js.map
