@@ -10,7 +10,7 @@ export class Player {
     private _mesh: AbstractMesh;
 
     private _scaling = 0.02;
-    private _position: Vector3 = createVector3({x: 0, y: -20 + 1 + 7.25, z: 20});
+    private _position: Vector3 = createVector3({x: 0, y: 8.25, z: -10});
 
     constructor(scene: GameScene) {
         this._scene = scene;
@@ -64,7 +64,7 @@ export class Player {
             if (this._mesh?.physicsImpostor === undefined) return;
 
             const isMoving = this._lengthSquared(moveVector) > 0.01;
-            const isFacing = this._lengthSquared(lookVector) > 0.01;
+            const isFacing = !bumperPressed && this._lengthSquared(lookVector) > 0.01;
             let faceVector: Vector3 | null = null;
             if (isFacing) faceVector = new Vector3(lookVector.x, lookVector.y, lookVector.z);
             else if (isMoving) faceVector = new Vector3(moveVector.x, moveVector.y, moveVector.z);

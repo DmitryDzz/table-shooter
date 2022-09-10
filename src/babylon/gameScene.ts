@@ -1,7 +1,8 @@
 import {
+    ArcRotateCamera, ArcRotateCameraGamepadInput, ArcRotateCameraInputsManager,
     CannonJSPlugin,
     Engine,
-    HemisphericLight,
+    HemisphericLight, Nullable,
     Scene,
     SceneOptions, TransformNode, UniversalCamera,
     Vector3
@@ -9,11 +10,22 @@ import {
 import {Env} from "./env";
 import {createVector3} from "./math";
 import {GamepadState} from "../messages";
+import {ArcRotateCameraWorkerInput} from "./ArcRotateCameraWorkerInput";
+
+export interface CameraRotationSpeedFactors {
+    /** 0..1 value. */
+    alpha: number;
+    /** 0..1 value. */
+    beta: number;
+}
 
 export abstract class GameScene extends Scene {
-    public readonly light: HemisphericLight;
-    public readonly camera: UniversalCamera;
     public readonly rootNode: TransformNode;
+    public readonly cameraParentNode: TransformNode;
+    public readonly camera: ArcRotateCamera;
+    public readonly light: HemisphericLight;
+
+    public cameraRotationSpeedFactors: CameraRotationSpeedFactors = {alpha: 0, beta: 0};
 
     protected constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
         super(engine, options);
@@ -24,21 +36,26 @@ export abstract class GameScene extends Scene {
         this.enablePhysics(gravity, physicsPlugin);
         // this.enablePhysics(gravity);
 
-        this.camera = new UniversalCamera('camera', createVector3(Env.camera.position), this);
+        this.rootNode = new TransformNode("rootNode", this);
+        this.rootNode.scaling = createVector3({x: 0.02, y: 0.02, z: 0.02});
+
+        this.cameraParentNode = new TransformNode("cameraParentNode", this);
+        this.cameraParentNode.parent = this.rootNode;
+        this.cameraParentNode.position = Vector3.Zero();
+
+        const deg2rad = (deg: number): number => {return deg * Math.PI / 180};
+
+        this.camera = new ArcRotateCamera("camera",deg2rad(-90), deg2rad(60), 36, Vector3.Zero(), this, true);
+        this.camera.parent = this.cameraParentNode;
         this.camera.minZ = Env.camera.near;
         this.camera.maxZ = Env.camera.far;
         this.camera.setTarget(createVector3(Env.camera.defaultDirection)
-            .add(createVector3({x: 0, y: -0.5, z: 0})));
-            //.add(createVector3(Env.camera.position)));
+            .add(createVector3({x: 0, y: 0, z: 1})));
         this.camera.attachControl(canvas);
 
-        // Turn on touch on mobile phones:
-        // @ts-ignore
-        this.camera.inputs.attached.mouse.touchEnabled = true;
-        // Disable camera zoom and rotation in Oculus Browser in 2D mode:
-        this.camera.inputs.removeByType("FreeCameraTouchInput");
-        this.camera.inputs.removeByType("FreeCameraGamepadInput");
-        // console.dir(this.camera.inputs);
+        this.camera.inputs.clear();
+        this.camera.inputs.add(new ArcRotateCameraWorkerInput(this, 1, 1));
+        this.camera.attachControl("ArcRotateCameraWorkerInput");
 
         this.light = new HemisphericLight('light', new Vector3(0, 1, 0), this);
 
@@ -55,9 +72,6 @@ export abstract class GameScene extends Scene {
         if (!environment) {
             throw new Error("Cannot create environment");
         }
-
-        this.rootNode = new TransformNode("rootNode", this);
-        this.rootNode.scaling = createVector3({x: 0.02, y: 0.02, z: 0.02});
     }
 
     abstract initializeAsync(): Promise<void>;

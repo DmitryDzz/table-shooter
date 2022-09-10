@@ -31,14 +31,13 @@ export class Level1 extends GameScene {
             mesh.parent = this.rootNode;
         }
 
-
         const ground: AbstractMesh = loadedAsset.meshes.find(x => x.name === "Ground");
-        ground.position = createVector3({x: 0, y: -20, z: 30});
+        ground.position = createVector3({x: 0, y: 0, z: 0});
 
 
         const homeYard: TransformNode = new TransformNode("HomeYard", this);
-        homeYard.parent = this.rootNode;
-        homeYard.position = createVector3({x: -8, y: -20, z: 30});
+        homeYard.parent = this.rootNode; //TODO DZZ DELETE?
+        homeYard.position = createVector3({x: -8, y: 0, z: 0});
         homeYard.rotate(Vector3.Up(), Math.PI / 4 * 3);
 
         const house: AbstractMesh = loadedAsset.meshes.find(x => x.name === "House");
@@ -72,12 +71,12 @@ export class Level1 extends GameScene {
 
 
         const barn: AbstractMesh = loadedAsset.meshes.find(x => x.name === "Barn");
-        barn.position = createVector3({x: 10, y: -20, z: 30});
+        barn.position = createVector3({x: 10, y: 0, z: 0});
         barn.rotate(Vector3.Up(), -Math.PI / 4 * 3);
 
 
         const streetlight: AbstractMesh = loadedAsset.meshes.find(x => x.name === "Streetlight");
-        streetlight.position = createVector3({x: 1, y: -20, z: 27});
+        streetlight.position = createVector3({x: 1, y: 0, z: -3});
         streetlight.rotate(Vector3.Up(), Math.PI);
 
 
@@ -103,6 +102,10 @@ export class Level1 extends GameScene {
     }
 
     setGamepadState(state: GamepadState) {
+        this.cameraRotationSpeedFactors = {
+            alpha: state.bumperPressed ? state.lookVector.x : 0,
+            beta: state.bumperPressed ? state.lookVector.z : 0,
+        }
         this._player?.setGamepadState(state);
     }
 }
