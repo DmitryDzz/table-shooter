@@ -57,45 +57,6 @@ class App {
             document.body.appendChild(div);
             return;
         }
-
-        // window.CANNON = require("cannon");
-
-        // const engine = new Engine(canvas, true, {preserveDrawingBuffer: true, stencil: true});
-        // const sceneSwitcher = new SceneSwitcher(engine, canvas);
-        //
-        // window.addEventListener("load", async () => {
-        //     await sceneSwitcher.loadFirstSceneAsync();
-        // });
-        //
-        // // hide/show the Inspector
-        // window.addEventListener("keydown", async (ev) => {
-        //     const scene = sceneSwitcher.currentScene;
-        //     if (!ev.shiftKey && !ev.ctrlKey && !ev.altKey && ev.code === "KeyI") {
-        //         if (scene.debugLayer.isVisible()) {
-        //             scene.debugLayer.hide();
-        //         } else {
-        //             await scene.debugLayer.show({
-        //                 embedMode: false,
-        //                 overlay: true,
-        //             });
-        //         }
-        //     }
-        //
-        //     if (!ev.shiftKey && !ev.ctrlKey && !ev.altKey && ev.code === "KeyN") {
-        //         await sceneSwitcher.loadNextSceneAsync();
-        //     }
-        // });
-        //
-        // window.addEventListener("resize", () => {
-        //     canvas.width = window.innerWidth;
-        //     canvas.height = window.innerHeight;
-        //     engine.resize();
-        // });
-        //
-        // // run the main render loop
-        // engine.runRenderLoop(() => {
-        //     sceneSwitcher.currentScene?.render();
-        // });
     }
 }
 

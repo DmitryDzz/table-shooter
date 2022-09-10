@@ -7,6 +7,8 @@ export interface Vector {
 export interface GamepadState {
     moveVector: Vector;
     lookVector: Vector;
+    bumperPressed: boolean;
+    triggerPressed: boolean;
 }
 
 export type MsgOffscreen = {

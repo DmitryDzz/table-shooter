@@ -5,7 +5,6 @@ import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
 import {GamepadState, Vector} from "../messages";
 import playerGLB from "../../public/assets/player.glb";
 
-
 export class Player {
     private readonly _scene: GameScene;
     private _mesh: AbstractMesh;
@@ -58,26 +57,30 @@ export class Player {
         return v.x * v.x + v.y * v.y + v.z * v.z;
     }
 
-    setGamepadState({moveVector, lookVector}: GamepadState) {
-        if (this._mesh?.physicsImpostor === undefined) return;
+    setGamepadState({moveVector, lookVector, bumperPressed}: GamepadState) {
+        if (bumperPressed) {
 
-        const isMoving = this._lengthSquared(moveVector) > 0.01;
-        const isFacing = this._lengthSquared(lookVector) > 0.01;
-        let faceVector: Vector3 | null = null;
-        if (isFacing) faceVector = new Vector3(lookVector.x, lookVector.y, lookVector.z);
-        else if (isMoving) faceVector = new Vector3(moveVector.x, moveVector.y, moveVector.z);
-        if (faceVector !== null) {
-            const toQuaternion = Quaternion.FromLookDirectionRH(faceVector, Vector3.Up());
-            const speed = 0.01;
-            this._mesh.rotationQuaternion = Quaternion.Slerp(
-                this._mesh.rotationQuaternion, toQuaternion, speed * this._scene.deltaTime);
-        }
+        } else {
+            if (this._mesh?.physicsImpostor === undefined) return;
 
-        const speedValue = 0.25;
-        const velocity = new Vector3(moveVector.x, moveVector.y, moveVector.z).scale(speedValue);
-        this._mesh.physicsImpostor.friction = isMoving ? 0 : 1_000_000;
-        if (isMoving) {
-            this._mesh.physicsImpostor.setLinearVelocity(velocity);
+            const isMoving = this._lengthSquared(moveVector) > 0.01;
+            const isFacing = this._lengthSquared(lookVector) > 0.01;
+            let faceVector: Vector3 | null = null;
+            if (isFacing) faceVector = new Vector3(lookVector.x, lookVector.y, lookVector.z);
+            else if (isMoving) faceVector = new Vector3(moveVector.x, moveVector.y, moveVector.z);
+            if (faceVector !== null) {
+                const toQuaternion = Quaternion.FromLookDirectionRH(faceVector, Vector3.Up());
+                const speed = 0.01;
+                this._mesh.rotationQuaternion = Quaternion.Slerp(
+                    this._mesh.rotationQuaternion, toQuaternion, speed * this._scene.deltaTime);
+            }
+
+            const speedValue = 0.25;
+            const velocity = new Vector3(moveVector.x, moveVector.y, moveVector.z).scale(speedValue);
+            this._mesh.physicsImpostor.friction = isMoving ? 0 : 1_000_000;
+            if (isMoving) {
+                this._mesh.physicsImpostor.setLinearVelocity(velocity);
+            }
         }
     }
 
