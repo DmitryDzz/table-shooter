@@ -102,7 +102,7 @@ export class Level1 extends GameScene {
     }
 
     setGamepadState(state: GamepadState) {
-        this.cameraRotationSpeedFactors = {
+        this.cameraInput.cameraRotationSpeedFactors = {
             alpha: state.bumperPressed ? state.lookVector.x : 0,
             beta: state.bumperPressed ? state.lookVector.z : 0,
         }

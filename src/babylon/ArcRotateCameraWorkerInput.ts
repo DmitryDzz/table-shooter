@@ -1,28 +1,33 @@
 import {ICameraInput} from "@babylonjs/core/Cameras/cameraInputsManager";
 import {ArcRotateCamera, Engine, Nullable} from "@babylonjs/core";
-import {GameScene} from "./gameScene";
+
+export interface CameraRotationSpeedFactors {
+    /** 0..1 value. */
+    alpha: number;
+    /** 0..1 value. */
+    beta: number;
+}
 
 export class ArcRotateCameraWorkerInput implements ICameraInput<ArcRotateCamera> {
     private static readonly _epsilon = 0.2;
     private static readonly _minBeta = Math.PI / 18; // 10 degrees
     private static readonly _maxBeta = Math.PI * 99 / 199; // almost PI/2
 
-    private readonly _scene: GameScene;
     private readonly _maxAlphaSpeed: number;
     private readonly _maxBetaSpeed: number;
 
     private _engine: Nullable<Engine> = null;
 
+    cameraRotationSpeedFactors: CameraRotationSpeedFactors = {alpha: 0, beta: 0};
+
     camera: Nullable<ArcRotateCamera>;
 
     /**
      * Constructor.
-     * @param scene GameScene.
      * @param maxAlphaSpeed radians per second.
      * @param maxBetaSpeed radians per second.
      */
-    constructor(scene: GameScene, maxAlphaSpeed: number, maxBetaSpeed: number) {
-        this._scene = scene;
+    constructor(maxAlphaSpeed: number, maxBetaSpeed: number) {
         this._maxAlphaSpeed = maxAlphaSpeed;
         this._maxBetaSpeed = maxBetaSpeed;
     }
@@ -45,7 +50,7 @@ export class ArcRotateCameraWorkerInput implements ICameraInput<ArcRotateCamera>
 
     checkInputs(): void {
         if (this._engine === null) return;
-        const factors = this._scene.cameraRotationSpeedFactors;
+        const factors = this.cameraRotationSpeedFactors;
         const deltaTime = this._engine.getDeltaTime() / 1000.0;
 
         const speedAlpha = Math.abs(factors.alpha) < ArcRotateCameraWorkerInput._epsilon

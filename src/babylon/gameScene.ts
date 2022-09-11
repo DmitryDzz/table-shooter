@@ -12,20 +12,12 @@ import {createVector3} from "./math";
 import {GamepadState} from "../messages";
 import {ArcRotateCameraWorkerInput} from "./ArcRotateCameraWorkerInput";
 
-export interface CameraRotationSpeedFactors {
-    /** 0..1 value. */
-    alpha: number;
-    /** 0..1 value. */
-    beta: number;
-}
-
 export abstract class GameScene extends Scene {
     public readonly rootNode: TransformNode;
     public readonly cameraParentNode: TransformNode;
     public readonly camera: ArcRotateCamera;
+    public readonly cameraInput: ArcRotateCameraWorkerInput;
     public readonly light: HemisphericLight;
-
-    public cameraRotationSpeedFactors: CameraRotationSpeedFactors = {alpha: 0, beta: 0};
 
     protected constructor(engine: Engine, canvas: HTMLCanvasElement, options?: SceneOptions) {
         super(engine, options);
@@ -54,7 +46,8 @@ export abstract class GameScene extends Scene {
         this.camera.attachControl(canvas);
 
         this.camera.inputs.clear();
-        this.camera.inputs.add(new ArcRotateCameraWorkerInput(this, 1, 1));
+        this.cameraInput = new ArcRotateCameraWorkerInput(1, 1);
+        this.camera.inputs.add(this.cameraInput);
         this.camera.attachControl("ArcRotateCameraWorkerInput");
 
         this.light = new HemisphericLight('light', new Vector3(0, 1, 0), this);
