@@ -106,6 +106,7 @@ export class Level1 extends GameScene {
             alpha: state.bumperPressed ? state.lookVector.x : 0,
             beta: state.bumperPressed ? state.lookVector.z : 0,
         }
-        this._player?.setGamepadState(state);
+        const cameraDirection = this.camera.getDirection(Vector3.Forward());
+        this._player?.setGamepadState(state, cameraDirection);
     }
 }

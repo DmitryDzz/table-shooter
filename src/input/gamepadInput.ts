@@ -60,10 +60,10 @@ export class GamepadInput {
         }
 
         const moveVector = axes.length >= 2
-            ? {x: axes[0], y: 0, z: -axes[1]}
+            ? {x: -axes[0], y: 0, z: axes[1]}
             : {x: 0, y: 0, z: 0};
         const lookVector = axes.length >= 4
-            ? {x: axes[2], y: 0, z: -axes[3]}
+            ? {x: -axes[2], y: 0, z: axes[3]}
             : {x: 0, y: 0, z: 0};
         return {moveVector, lookVector, bumperPressed, triggerPressed};
     }

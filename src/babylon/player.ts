@@ -4,12 +4,13 @@ import {createVector3} from "./math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
 import {GamepadState, Vector} from "../messages";
 import playerGLB from "../../public/assets/player.glb";
+import {Env} from "./env";
 
 export class Player {
     private readonly _scene: GameScene;
     private _mesh: AbstractMesh;
 
-    private _scaling = 0.02;
+    private _scaling = Env.meters2units;
     private _position: Vector3 = createVector3({x: 0, y: 8.25, z: -10});
 
     constructor(scene: GameScene) {
@@ -57,30 +58,37 @@ export class Player {
         return v.x * v.x + v.y * v.y + v.z * v.z;
     }
 
-    setGamepadState({moveVector, lookVector, bumperPressed}: GamepadState) {
-        if (bumperPressed) {
+    setGamepadState({moveVector, lookVector, bumperPressed}: GamepadState, cameraDirection: Vector3) {
+        if (this._mesh?.physicsImpostor === undefined) return;
 
-        } else {
-            if (this._mesh?.physicsImpostor === undefined) return;
+        cameraDirection.y = 0;
+        cameraDirection.normalize();
+        const cameraQuaternion = Quaternion.FromLookDirectionLH(cameraDirection, Vector3.Up());
+        // console.log(`++++ x: ${cameraDirection.x.toFixed(2)}, y: ${cameraDirection.y.toFixed(2)}, z: ${cameraDirection.z.toFixed(2)}`); //TODO DZZ
 
-            const isMoving = this._lengthSquared(moveVector) > 0.01;
-            const isFacing = !bumperPressed && this._lengthSquared(lookVector) > 0.01;
-            let faceVector: Vector3 | null = null;
-            if (isFacing) faceVector = new Vector3(lookVector.x, lookVector.y, lookVector.z);
-            else if (isMoving) faceVector = new Vector3(moveVector.x, moveVector.y, moveVector.z);
-            if (faceVector !== null) {
-                const toQuaternion = Quaternion.FromLookDirectionRH(faceVector, Vector3.Up());
-                const speed = 0.01;
-                this._mesh.rotationQuaternion = Quaternion.Slerp(
-                    this._mesh.rotationQuaternion, toQuaternion, speed * this._scene.deltaTime);
-            }
+        const mv = createVector3({x: moveVector.x, y: moveVector.y, z: moveVector.z});
+        const lv = createVector3({x: lookVector.x, y: lookVector.y, z: lookVector.z});
 
-            const speedValue = 0.25;
-            const velocity = new Vector3(moveVector.x, moveVector.y, moveVector.z).scale(speedValue);
-            this._mesh.physicsImpostor.friction = isMoving ? 0 : 1_000_000;
-            if (isMoving) {
-                this._mesh.physicsImpostor.setLinearVelocity(velocity);
-            }
+        const isMoving = this._lengthSquared(mv) > 0.01;
+        const isFacing = !bumperPressed && this._lengthSquared(lv) > 0.01;
+        let faceVector: Vector3 | null = null;
+        if (isFacing) faceVector = lv.clone();
+        else if (isMoving) faceVector = mv.clone();
+        if (faceVector !== null) {
+            const faceQuaternion = Quaternion.FromLookDirectionLH(faceVector, Vector3.Up());
+            // const toQuaternion = faceQuaternion.clone();
+            const toQuaternion = cameraQuaternion.multiply(faceQuaternion);
+            // const toQuaternion = faceQuaternion.multiply(cameraQuaternion);
+            const speed = 0.01;
+            this._mesh.rotationQuaternion = Quaternion.Slerp(
+                this._mesh.rotationQuaternion, toQuaternion, speed * this._scene.deltaTime);
+        }
+
+        const speedValue = 0.25;
+        const velocity = mv.clone().applyRotationQuaternion(cameraQuaternion).scale(speedValue);
+        this._mesh.physicsImpostor.friction = isMoving ? 0 : 1_000_000;
+        if (isMoving) {
+            this._mesh.physicsImpostor.setLinearVelocity(velocity);
         }
     }
 

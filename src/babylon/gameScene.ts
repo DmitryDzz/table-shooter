@@ -1,10 +1,10 @@
 import {
-    ArcRotateCamera, ArcRotateCameraGamepadInput, ArcRotateCameraInputsManager,
+    ArcRotateCamera,
     CannonJSPlugin,
     Engine,
-    HemisphericLight, Nullable,
+    HemisphericLight,
     Scene,
-    SceneOptions, TransformNode, UniversalCamera,
+    SceneOptions, TransformNode,
     Vector3
 } from "@babylonjs/core";
 import {Env} from "./env";
@@ -37,7 +37,7 @@ export abstract class GameScene extends Scene {
         // this.enablePhysics(gravity);
 
         this.rootNode = new TransformNode("rootNode", this);
-        this.rootNode.scaling = createVector3({x: 0.02, y: 0.02, z: 0.02});
+        this.rootNode.scaling = Vector3.One().scale(Env.meters2units);
 
         this.cameraParentNode = new TransformNode("cameraParentNode", this);
         this.cameraParentNode.parent = this.rootNode;
