@@ -476,17 +476,18 @@ module.exports = styleTagTransform;
 
 /***/ }),
 
-/***/ "./src/input/gamepadInput.ts":
-/*!***********************************!*\
-  !*** ./src/input/gamepadInput.ts ***!
-  \***********************************/
+/***/ "./src/input/gamepadInputManager.ts":
+/*!******************************************!*\
+  !*** ./src/input/gamepadInputManager.ts ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "GamepadInput": () => (/* binding */ GamepadInput)
+/* harmony export */   "GamepadInputManager": () => (/* binding */ GamepadInputManager)
 /* harmony export */ });
-class GamepadInput {
+class GamepadInputManager {
+    static _triggerPressedBound = 0.00001;
     _worker;
     constructor(worker) {
         this._worker = worker;
@@ -514,12 +515,15 @@ class GamepadInput {
         console.info("Gamepad disconnected");
     };
     _readGamepads() {
+        const getGamepadsFunc = window.navigator["getGamepads"];
+        if (getGamepadsFunc === null || getGamepadsFunc === undefined)
+            return;
+        const gamepads = getGamepadsFunc.call(window.navigator);
         // The first four axes are: moveX, moveZ, lookX, and lookZ.
         const axes = [];
         let bumperPressed = false;
         let triggerPressed = false;
-        const triggerPressedBound = 0.2;
-        for (let gamepad of navigator.getGamepads()) {
+        for (let gamepad of gamepads) {
             if (gamepad === null)
                 continue;
             if (gamepad.buttons.length >= 5)
@@ -527,11 +531,12 @@ class GamepadInput {
             if (gamepad.buttons.length >= 6)
                 bumperPressed = bumperPressed || gamepad.buttons[5].pressed;
             if (gamepad.buttons.length >= 7)
-                triggerPressed = gamepad.buttons[6].value > triggerPressedBound;
+                triggerPressed = gamepad.buttons[6].value > GamepadInputManager._triggerPressedBound;
             if (gamepad.buttons.length >= 8)
-                triggerPressed = triggerPressed || gamepad.buttons[7].value > triggerPressedBound;
+                triggerPressed = triggerPressed || gamepad.buttons[7].value > GamepadInputManager._triggerPressedBound;
             for (let value of gamepad.axes) {
-                axes.push(value);
+                const value3 = value * value * value; // (more linear speed control)
+                axes.push(value3);
                 if (axes.length >= 4)
                     break;
             }
@@ -545,6 +550,42 @@ class GamepadInput {
             ? { x: -axes[2], y: 0, z: axes[3] }
             : { x: 0, y: 0, z: 0 };
         return { moveVector, lookVector, bumperPressed, triggerPressed };
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/input/keyboardInputManager.ts":
+/*!*******************************************!*\
+  !*** ./src/input/keyboardInputManager.ts ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "KeyboardInputManager": () => (/* binding */ KeyboardInputManager)
+/* harmony export */ });
+class KeyboardInputManager {
+    _worker;
+    constructor(worker) {
+        this._worker = worker;
+        // window.addEventListener("gamepadconnected", this._gamepadConnectedHandler);
+        // window.addEventListener("gamepaddisconnected", this._gamepadDisconnectedHandler);
+    }
+    // noinspection JSUnusedGlobalSymbols
+    dispose() {
+        // window.removeEventListener("gamepadconnected", this._gamepadConnectedHandler);
+        // window.removeEventListener("gamepaddisconnected", this._gamepadDisconnectedHandler);
+    }
+    update() {
+        // const message: MsgGamepad = {
+        //     type: "gamepad",
+        //     payload: {
+        //         state: this._readGamepads(),
+        //     },
+        // };
+        // this._worker.postMessage(message);
     }
 }
 
@@ -610,7 +651,7 @@ class GamepadInput {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "main-" + "0ed518b90edea75d73b6" + ".js";
+/******/ 			return "main-" + "ab490f3ad9314061935e" + ".js";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -702,7 +743,9 @@ var __webpack_exports__ = {};
   !*** ./src/app.ts ***!
   \********************/
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _input_gamepadInput__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input/gamepadInput */ "./src/input/gamepadInput.ts");
+/* harmony import */ var _input_gamepadInputManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input/gamepadInputManager */ "./src/input/gamepadInputManager.ts");
+/* harmony import */ var _input_keyboardInputManager__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./input/keyboardInputManager */ "./src/input/keyboardInputManager.ts");
+
 
 class App {
     worker;
@@ -754,9 +797,14 @@ class App {
     }
 }
 const app = new App();
-const gamepadInput = new _input_gamepadInput__WEBPACK_IMPORTED_MODULE_0__.GamepadInput(app.worker);
+const inputManagers = [
+    new _input_keyboardInputManager__WEBPACK_IMPORTED_MODULE_1__.KeyboardInputManager(app.worker),
+    new _input_gamepadInputManager__WEBPACK_IMPORTED_MODULE_0__.GamepadInputManager(app.worker),
+];
 const updateHandler = () => {
-    gamepadInput.update();
+    for (let inputManager of inputManagers) {
+        inputManager.update();
+    }
     requestAnimationFrame(updateHandler);
 };
 updateHandler();
@@ -817,4 +865,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /******/ })()
 ;
-//# sourceMappingURL=main-89373447a1f621a9f607.js.map
+//# sourceMappingURL=main-d6ef4538963d3d807198.js.map

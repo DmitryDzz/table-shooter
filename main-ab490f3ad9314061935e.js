@@ -188,7 +188,7 @@ class GameScene extends _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Scene {
             .add((0,_math__WEBPACK_IMPORTED_MODULE_2__.createVector3)({ x: 0, y: 0, z: 1 })));
         this.camera.attachControl(canvas);
         this.camera.inputs.clear();
-        this.cameraInput = new _ArcRotateCameraWorkerInput__WEBPACK_IMPORTED_MODULE_3__.ArcRotateCameraWorkerInput(1, 1);
+        this.cameraInput = new _ArcRotateCameraWorkerInput__WEBPACK_IMPORTED_MODULE_3__.ArcRotateCameraWorkerInput(2, 2);
         this.camera.inputs.add(this.cameraInput);
         this.camera.attachControl("ArcRotateCameraWorkerInput");
         this.light = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.HemisphericLight('light', new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Vector3(0, 1, 0), this);
@@ -781,4 +781,4 @@ module.exports = "assets/48406d8fa1350aa1f3b4.glb";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main-0ed518b90edea75d73b6.js.map
+//# sourceMappingURL=main-ab490f3ad9314061935e.js.map
