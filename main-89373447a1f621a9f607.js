@@ -610,7 +610,7 @@ class GamepadInput {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "main-" + "1719f896b785d2154c0c" + ".js";
+/******/ 			return "main-" + "0ed518b90edea75d73b6" + ".js";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -817,4 +817,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /******/ })()
 ;
-//# sourceMappingURL=main-0af83cafd0d4981c5b7c.js.map
+//# sourceMappingURL=main-89373447a1f621a9f607.js.map
