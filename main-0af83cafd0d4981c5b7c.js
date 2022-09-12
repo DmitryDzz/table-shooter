@@ -610,7 +610,7 @@ class GamepadInput {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "main-" + "aacf272afe2666d9723a" + ".js";
+/******/ 			return "main-" + "1719f896b785d2154c0c" + ".js";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -707,7 +707,7 @@ __webpack_require__.r(__webpack_exports__);
 class App {
     worker;
     constructor() {
-        console.log("%cUnnamed Shooter App", "background: lime");
+        console.log(`%c Table Shooter App (v${"1.0.4"}) `, "background: lime");
         // create the canvas html element and attach it to the webpage
         const canvas = document.createElement("canvas");
         canvas.style.width = "100%";
@@ -817,4 +817,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /******/ })()
 ;
-//# sourceMappingURL=main-0089799924928e5269be.js.map
+//# sourceMappingURL=main-0af83cafd0d4981c5b7c.js.map

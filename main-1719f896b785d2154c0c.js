@@ -518,7 +518,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babylon_appInitializer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./babylon/appInitializer */ "./src/babylon/appInitializer.ts");
 
 const scope = globalThis;
-console.log("%cUnnamed Shooter Worker", "background: yellowgreen");
+console.log("%c Table Shooter Worker ", "background: yellowgreen");
 const appInitializer = new _babylon_appInitializer__WEBPACK_IMPORTED_MODULE_0__.AppInitializer();
 globalThis.CANNON = __webpack_require__(/*! cannon */ "./node_modules/cannon/build/cannon.js");
 scope.onmessage = async (ev) => {
@@ -781,4 +781,4 @@ module.exports = "assets/48406d8fa1350aa1f3b4.glb";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main-aacf272afe2666d9723a.js.map
+//# sourceMappingURL=main-1719f896b785d2154c0c.js.map
