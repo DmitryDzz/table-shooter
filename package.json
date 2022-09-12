@@ -1,25 +1,29 @@
 {
   "homepage": "https://DmitryDzz.github.io/table-shooter",
   "name": "shooter",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "",
+  "author": "DmitryDzz",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "madge": "madge --circular --extensions ts ./",
     "build": "webpack",
     "start": "webpack-dev-server --port 8080",
-    "deploy": "gh-pages -d dist"
+    "update-version": "npm pkg set version=$APP_VER",
+    "deploy": "env-cmd -x npm-run-all update-version build && gh-pages -d dist && npm pkg get homepage"
   },
-  "author": "DmitryDzz",
-  "license": "MIT",
   "devDependencies": {
     "@babylonjs/core": "^5.23.0",
     "@babylonjs/inspector": "^5.23.0",
     "@babylonjs/loaders": "^5.23.0",
     "css-loader": "^6.7.1",
+    "dotenv-webpack": "^8.0.1",
+    "env-cmd": "^10.1.0",
     "gh-pages": "^4.0.0",
     "html-webpack-plugin": "^5.5.0",
     "madge": "^5.0.1",
+    "npm-run-all": "^4.1.5",
     "source-map-loader": "^4.0.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.1",

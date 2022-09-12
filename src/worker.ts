@@ -3,7 +3,7 @@ import {AppInitializer} from "./babylon/appInitializer";
 
 const scope = (globalThis as unknown) as DedicatedWorkerGlobalScope;
 
-console.log("%cUnnamed Shooter Worker", "background: yellowgreen");
+console.log("%c Table Shooter Worker ", "background: yellowgreen");
 
 const appInitializer = new AppInitializer();
 

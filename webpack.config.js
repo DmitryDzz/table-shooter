@@ -3,6 +3,7 @@ const fs = require("fs");
 const appDirectory = fs.realpathSync(process.cwd());
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const DotenvWebpackPlugin = require("dotenv-webpack");
 
 const main = {
     entry: [
@@ -48,9 +49,8 @@ const main = {
         ],
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            inject: true,
-        })
+        new HtmlWebpackPlugin({inject: true}),
+        new DotenvWebpackPlugin({path: ".env"}),
     ],
     mode: "development",
     devtool: "source-map",
@@ -63,10 +63,10 @@ const worker = {
         path: path.resolve(__dirname, "./dist"),
         clean: true,
     },
-    plugins: [new HtmlWebpackPlugin(
-        {
-            inject: true,
-        })],
+    plugins: [
+        new HtmlWebpackPlugin({inject: true}),
+        new DotenvWebpackPlugin({path: ".env"}),
+    ],
     target: "webworker",
     devtool: "source-map",
     mode: "development",

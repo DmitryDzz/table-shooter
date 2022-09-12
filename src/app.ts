@@ -5,7 +5,7 @@ class App {
     readonly worker: Worker;
 
     constructor() {
-        console.log("%cUnnamed Shooter App", "background: lime");
+        console.log(`%c Table Shooter App (v${process.env.APP_VER}) `, "background: lime");
 
         // create the canvas html element and attach it to the webpage
         const canvas: HTMLCanvasElement = document.createElement("canvas");
