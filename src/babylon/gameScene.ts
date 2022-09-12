@@ -46,7 +46,7 @@ export abstract class GameScene extends Scene {
         this.camera.attachControl(canvas);
 
         this.camera.inputs.clear();
-        this.cameraInput = new ArcRotateCameraWorkerInput(1, 1);
+        this.cameraInput = new ArcRotateCameraWorkerInput(2, 2);
         this.camera.inputs.add(this.cameraInput);
         this.camera.attachControl("ArcRotateCameraWorkerInput");
 

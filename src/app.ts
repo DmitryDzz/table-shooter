@@ -1,5 +1,7 @@
 import {MsgInspector, MsgLoad, MsgNextScene, MsgOffscreen, MsgResize} from "./messages";
-import {GamepadInput} from "./input/gamepadInput";
+import {GamepadInputManager} from "./input/gamepadInputManager";
+import {InputManager} from "./input/inputManager";
+import {KeyboardInputManager} from "./input/keyboardInputManager";
 
 class App {
     readonly worker: Worker;
@@ -62,9 +64,14 @@ class App {
 
 const app = new App();
 
-const gamepadInput = new GamepadInput(app.worker);
+const inputManagers: InputManager[] = [
+    new KeyboardInputManager(app.worker),
+    new GamepadInputManager(app.worker),
+];
 const updateHandler = () => {
-    gamepadInput.update();
+    for (let inputManager of inputManagers) {
+        inputManager.update();
+    }
     requestAnimationFrame(updateHandler);
 }
 updateHandler();

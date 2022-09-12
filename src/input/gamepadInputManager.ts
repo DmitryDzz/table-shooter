@@ -1,6 +1,8 @@
 import {GamepadState, MsgGamepad} from "../messages";
+import {InputManager} from "./inputManager";
 
-export class GamepadInput {
+export class GamepadInputManager implements InputManager {
+    private static readonly _triggerPressedBound = 0.00001;
     private readonly _worker: Worker;
 
     constructor(worker: Worker) {
@@ -34,12 +36,15 @@ export class GamepadInput {
     };
 
     private _readGamepads(): GamepadState {
+        const getGamepadsFunc = window.navigator["getGamepads"];
+        if (getGamepadsFunc === null || getGamepadsFunc === undefined) return;
+        const gamepads = getGamepadsFunc.call(window.navigator);
+
         // The first four axes are: moveX, moveZ, lookX, and lookZ.
         const axes: number[] = [];
         let bumperPressed: boolean = false;
         let triggerPressed: boolean = false;
-        const triggerPressedBound = 0.2;
-        for (let gamepad of navigator.getGamepads()) {
+        for (let gamepad of gamepads) {
             if (gamepad === null) continue;
 
             if (gamepad.buttons.length >= 5)
@@ -48,12 +53,13 @@ export class GamepadInput {
                 bumperPressed = bumperPressed || gamepad.buttons[5].pressed;
 
             if (gamepad.buttons.length >= 7)
-                triggerPressed = gamepad.buttons[6].value > triggerPressedBound;
+                triggerPressed = gamepad.buttons[6].value > GamepadInputManager._triggerPressedBound;
             if (gamepad.buttons.length >= 8)
-                triggerPressed = triggerPressed || gamepad.buttons[7].value > triggerPressedBound;
+                triggerPressed = triggerPressed || gamepad.buttons[7].value > GamepadInputManager._triggerPressedBound;
 
             for (let value of gamepad.axes) {
-                axes.push(value);
+                const value3 = value * value * value; // (more linear speed control)
+                axes.push(value3);
                 if (axes.length >= 4) break;
             }
             if (axes.length >= 4) break;
