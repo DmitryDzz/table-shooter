@@ -750,7 +750,7 @@ __webpack_require__.r(__webpack_exports__);
 class App {
     worker;
     constructor() {
-        console.log(`%c Table Shooter App (v${"1.0.4"}) `, "background: lime");
+        console.log(`%c Table Shooter App (v${"1.0.5"}) `, "background: lime");
         // create the canvas html element and attach it to the webpage
         const canvas = document.createElement("canvas");
         canvas.style.width = "100%";
@@ -865,4 +865,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /******/ })()
 ;
-//# sourceMappingURL=main-d6ef4538963d3d807198.js.map
+//# sourceMappingURL=main-9de6c90d07621cbdd028.js.map
