@@ -64,14 +64,12 @@ class App {
 
 const app = new App();
 
-const inputManagers: InputManager[] = [
-    new KeyboardInputManager(app.worker),
-    new GamepadInputManager(app.worker),
-];
+const keyboardInputManager = new KeyboardInputManager(app.worker);
+const gamepadInputManager = new GamepadInputManager(app.worker);
 const updateHandler = () => {
-    for (let inputManager of inputManagers) {
-        inputManager.update();
-    }
+    keyboardInputManager.update();
+    if (!keyboardInputManager.inUse)
+        gamepadInputManager.update();
     requestAnimationFrame(updateHandler);
 }
 updateHandler();

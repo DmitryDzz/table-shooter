@@ -7,8 +7,13 @@ export interface Vector {
 export interface GamepadState {
     moveVector: Vector;
     lookVector: Vector;
-    bumperPressed: boolean;
+    isCameraLookVector: boolean;
     triggerPressed: boolean;
+}
+
+export interface KeyboardState {
+    moveVector: Vector;
+    speedFactor: number;
 }
 
 export type MsgOffscreen = {
@@ -47,4 +52,11 @@ export type MsgGamepad = {
     }
 }
 
-export type MsgToWorker = MsgOffscreen | MsgResize | MsgLoad | MsgInspector | MsgNextScene | MsgGamepad;
+export type MsgKeyboard = {
+    type: "keyboard";
+    payload: {
+        state: KeyboardState;
+    }
+}
+
+export type MsgToWorker = MsgOffscreen | MsgResize | MsgLoad | MsgInspector | MsgNextScene | MsgGamepad | MsgKeyboard;

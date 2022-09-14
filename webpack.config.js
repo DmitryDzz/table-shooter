@@ -49,7 +49,7 @@ const main = {
         ],
     },
     plugins: [
-        new HtmlWebpackPlugin({inject: true}),
+        new HtmlWebpackPlugin({title: "Table Shooter", inject: true}),
         new DotenvWebpackPlugin({path: ".env"}),
     ],
     mode: "development",
@@ -64,7 +64,7 @@ const worker = {
         clean: true,
     },
     plugins: [
-        new HtmlWebpackPlugin({inject: true}),
+        new HtmlWebpackPlugin({title: "Table Shooter Worker", inject: true}),
         new DotenvWebpackPlugin({path: ".env"}),
     ],
     target: "webworker",

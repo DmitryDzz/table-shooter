@@ -14,7 +14,7 @@ import {Player} from "./player";
 
 import "@babylonjs/loaders/glTF";
 import environmentGLB from "../../public/assets/environment.glb";
-import {GamepadState} from "../messages";
+import {GamepadState, KeyboardState} from "../messages";
 
 export class Level1 extends GameScene {
     private _player?: Player = undefined;
@@ -103,10 +103,15 @@ export class Level1 extends GameScene {
 
     setGamepadState(state: GamepadState) {
         this.cameraInput.cameraRotationSpeedFactors = {
-            alpha: state.bumperPressed ? state.lookVector.x : 0,
-            beta: state.bumperPressed ? state.lookVector.z : 0,
+            alpha: state.isCameraLookVector ? state.lookVector.x : 0,
+            beta: state.isCameraLookVector ? state.lookVector.z : 0,
         }
         const cameraDirection = this.camera.getDirection(Vector3.Forward());
-        this._player?.setGamepadState(state, cameraDirection);
+        this._player?.setInputState(state.moveVector, 1, state.lookVector, state.isCameraLookVector, cameraDirection);
+    }
+
+    setKeyboardState(state: KeyboardState): void {
+        const cameraDirection = this.camera.getDirection(Vector3.Forward());
+        this._player?.setInputState(state.moveVector, state.speedFactor, state.moveVector, false, cameraDirection);
     }
 }

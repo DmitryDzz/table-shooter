@@ -9,7 +9,7 @@ import {
 } from "@babylonjs/core";
 import {Env} from "./env";
 import {createVector3} from "./math";
-import {GamepadState} from "../messages";
+import {GamepadState, KeyboardState} from "../messages";
 import {ArcRotateCameraWorkerInput} from "./ArcRotateCameraWorkerInput";
 
 export abstract class GameScene extends Scene {
@@ -70,4 +70,6 @@ export abstract class GameScene extends Scene {
     abstract initializeAsync(): Promise<void>;
 
     abstract setGamepadState(state: GamepadState): void;
+
+    abstract setKeyboardState(state: KeyboardState): void;
 }

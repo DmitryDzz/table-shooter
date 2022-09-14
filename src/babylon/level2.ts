@@ -5,7 +5,7 @@ import {
 } from "@babylonjs/core";
 import {GameScene} from "./gameScene";
 import {createVector3} from "./math";
-import {GamepadState} from "../messages";
+import {GamepadState, KeyboardState} from "../messages";
 
 export class Level2 extends GameScene {
 
@@ -19,5 +19,8 @@ export class Level2 extends GameScene {
     }
 
     setGamepadState(_state: GamepadState): void {
+    }
+
+    setKeyboardState(_state: KeyboardState): void {
     }
 }

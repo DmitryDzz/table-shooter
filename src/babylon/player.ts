@@ -2,7 +2,7 @@ import {AbstractMesh, PhysicsImpostor, Quaternion, SceneLoader, Vector3} from "@
 import {GameScene} from "./gameScene";
 import {createVector3} from "./math";
 import {ISceneLoaderAsyncResult} from "@babylonjs/core/Loading/sceneLoader";
-import {GamepadState, Vector} from "../messages";
+import {Vector} from "../messages";
 import playerGLB from "../../public/assets/player.glb";
 import {Env} from "./env";
 
@@ -58,19 +58,20 @@ export class Player {
         return v.x * v.x + v.y * v.y + v.z * v.z;
     }
 
-    setGamepadState({moveVector, lookVector, bumperPressed}: GamepadState, cameraDirection: Vector3) {
+    setInputState(moveVector: Vector, speedFactor: number, lookVector: Vector, isCameraLookVector: boolean, cameraDirection: Vector3) {
         if (this._mesh?.physicsImpostor === undefined) return;
 
         cameraDirection.y = 0;
         cameraDirection.normalize();
         const cameraQuaternion = Quaternion.FromLookDirectionLH(cameraDirection, Vector3.Up());
+        // console.log(`++++ x: ${moveVector.x.toFixed(2)}, y: ${moveVector.y.toFixed(2)}, z: ${moveVector.z.toFixed(2)}`); //TODO DZZ
         // console.log(`++++ x: ${cameraDirection.x.toFixed(2)}, y: ${cameraDirection.y.toFixed(2)}, z: ${cameraDirection.z.toFixed(2)}`); //TODO DZZ
 
         const mv = createVector3({x: moveVector.x, y: moveVector.y, z: moveVector.z});
         const lv = createVector3({x: lookVector.x, y: lookVector.y, z: lookVector.z});
 
         const isMoving = this._lengthSquared(mv) > 0.01;
-        const isFacing = !bumperPressed && this._lengthSquared(lv) > 0.01;
+        const isFacing = !isCameraLookVector && this._lengthSquared(lv) > 0.01;
         let faceVector: Vector3 | null = null;
         if (isFacing) faceVector = lv.clone();
         else if (isMoving) faceVector = mv.clone();
@@ -85,7 +86,7 @@ export class Player {
         }
 
         const speedValue = 0.25;
-        const velocity = mv.clone().applyRotationQuaternion(cameraQuaternion).scale(speedValue);
+        const velocity = mv.clone().applyRotationQuaternion(cameraQuaternion).scale(speedValue * speedFactor);
         this._mesh.physicsImpostor.friction = isMoving ? 0 : 1_000_000;
         if (isMoving) {
             this._mesh.physicsImpostor.setLinearVelocity(velocity);

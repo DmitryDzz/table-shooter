@@ -5,6 +5,8 @@ export class GamepadInputManager implements InputManager {
     private static readonly _triggerPressedBound = 0.00001;
     private readonly _worker: Worker;
 
+    private _isConnected: boolean = false;
+
     constructor(worker: Worker) {
         this._worker = worker;
         window.addEventListener("gamepadconnected", this._gamepadConnectedHandler);
@@ -28,10 +30,12 @@ export class GamepadInputManager implements InputManager {
     }
 
     private _gamepadConnectedHandler = (_ev: GamepadEvent) => {
+        this._isConnected = true;
         console.info("Gamepad connected");
     };
 
     private _gamepadDisconnectedHandler = (_ev: GamepadEvent) => {
+        this._isConnected = false;
         console.info("Gamepad disconnected");
     };
 
@@ -71,6 +75,10 @@ export class GamepadInputManager implements InputManager {
         const lookVector = axes.length >= 4
             ? {x: -axes[2], y: 0, z: axes[3]}
             : {x: 0, y: 0, z: 0};
-        return {moveVector, lookVector, bumperPressed, triggerPressed};
+        return {moveVector, lookVector, isCameraLookVector: bumperPressed, triggerPressed};
+    }
+
+    get inUse(): boolean {
+        return this._isConnected;
     }
 }
