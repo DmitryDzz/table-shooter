@@ -14,6 +14,8 @@ export interface GamepadState {
 export interface KeyboardState {
     moveVector: Vector;
     speedFactor: number;
+    cameraDeltaAlpha: number;
+    cameraDeltaBeta: number;
 }
 
 export type MsgOffscreen = {

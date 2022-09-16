@@ -14,7 +14,11 @@ export class KeyboardInputManager implements InputManager {
     private _isShiftPressed: boolean;
     private _isCtrlPressed: boolean;
 
-    private _alpha?: number;
+    private _cameraDeltaAlpha: number = 0;
+    private _cameraDeltaBeta: number = 0;
+
+    private _prevCtrlPressed?: boolean = undefined;
+    private _isPointerDown: boolean = false;
 
     constructor(worker: Worker) {
         this._worker = worker;
@@ -50,6 +54,8 @@ export class KeyboardInputManager implements InputManager {
                 state: {
                     moveVector,
                     speedFactor: this._isShiftPressed ? 1.0 : 0.5,
+                    cameraDeltaAlpha: this._cameraDeltaAlpha,
+                    cameraDeltaBeta: this._cameraDeltaBeta,
                 },
             },
         };
@@ -80,35 +86,38 @@ export class KeyboardInputManager implements InputManager {
         this._keyHandler(ev, false);
     };
 
-    private _prevCtrlPressed?: boolean = undefined;
-
     private _pointerMoveHandler = (ev: PointerEvent) => {
-        if (this._alpha === undefined) {
-            this._alpha = 0.0;
+        if (this._isPointerDown) {
+            this._pointerHandler(ev);
+            this._cameraDeltaAlpha = -ev.movementX * KeyboardInputManager._p2rad;
+            this._cameraDeltaBeta = -ev.movementY * KeyboardInputManager._p2rad;
+        } else {
+            this._cameraDeltaAlpha = 0;
+            this._cameraDeltaBeta = 0;
         }
-        this._alpha += ev.movementX * KeyboardInputManager._p2rad;
-
-        this._mouseHandler(ev);
     }
 
-    private _mouseHandler = (ev: MouseEvent) => {
+    private _pointerHandler = (ev: PointerEvent) => {
         const isCtrlPressed: boolean = ev.ctrlKey;
         if (this._prevCtrlPressed === undefined) {
             this._prevCtrlPressed = isCtrlPressed;
+            this._isCtrlPressed = isCtrlPressed;
         } else {
             if (isCtrlPressed !== this._prevCtrlPressed) {
+                this._prevCtrlPressed = isCtrlPressed;
                 this._isCtrlPressed = isCtrlPressed;
                 // console.log(`Ctrl: ${this._isCtrlPressed}`);
             }
-            this._prevCtrlPressed = isCtrlPressed;
         }
     }
 
     private _pointerDownHandler = (ev: PointerEvent) => {
-        this._mouseHandler(ev);
+        this._isPointerDown = true;
+        this._pointerHandler(ev);
     }
 
     private _pointerUpHandler = (ev: PointerEvent) => {
-        this._mouseHandler(ev);
+        this._isPointerDown = false;
+        this._pointerHandler(ev);
     }
 }

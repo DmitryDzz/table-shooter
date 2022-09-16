@@ -1,6 +1,5 @@
 import {MsgInspector, MsgLoad, MsgNextScene, MsgOffscreen, MsgResize} from "./messages";
 import {GamepadInputManager} from "./input/gamepadInputManager";
-import {InputManager} from "./input/inputManager";
 import {KeyboardInputManager} from "./input/keyboardInputManager";
 
 class App {

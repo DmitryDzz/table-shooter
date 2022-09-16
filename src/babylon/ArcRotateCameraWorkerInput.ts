@@ -1,5 +1,6 @@
 import {ICameraInput} from "@babylonjs/core/Cameras/cameraInputsManager";
 import {ArcRotateCamera, Engine, Nullable} from "@babylonjs/core";
+import {Env} from "./env";
 
 export interface CameraRotationSpeedFactors {
     /** 0..1 value. */
@@ -10,8 +11,6 @@ export interface CameraRotationSpeedFactors {
 
 export class ArcRotateCameraWorkerInput implements ICameraInput<ArcRotateCamera> {
     private static readonly _epsilon = 0.2;
-    private static readonly _minBeta = Math.PI / 18; // 10 degrees
-    private static readonly _maxBeta = Math.PI * 99 / 199; // almost PI/2
 
     private readonly _maxAlphaSpeed: number;
     private readonly _maxBetaSpeed: number;
@@ -56,12 +55,16 @@ export class ArcRotateCameraWorkerInput implements ICameraInput<ArcRotateCamera>
         const speedAlpha = Math.abs(factors.alpha) < ArcRotateCameraWorkerInput._epsilon
             ? 0
             : this._maxAlphaSpeed * factors.alpha;
-        this.camera.alpha += speedAlpha * deltaTime;
-
         const speedBeta = Math.abs(factors.beta) < ArcRotateCameraWorkerInput._epsilon
             ? 0
             : this._maxBetaSpeed * factors.beta;
-        const newBeta = this.camera.beta - speedBeta * deltaTime;
-        this.camera.beta = Math.min(Math.max(newBeta, ArcRotateCameraWorkerInput._minBeta), ArcRotateCameraWorkerInput._maxBeta);
+        this.setCameraDeltaRotation(speedAlpha * deltaTime, -speedBeta * deltaTime);
+    }
+
+    setCameraDeltaRotation(deltaAlpha: number, deltaBeta: number) {
+        this.camera.alpha += deltaAlpha;
+
+        const newBeta = this.camera.beta + deltaBeta;
+        this.camera.beta = Math.min(Math.max(newBeta, Env.camera.minBeta), Env.camera.maxBeta);
     }
 }
