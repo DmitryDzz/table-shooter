@@ -4,6 +4,11 @@ export interface Vector {
     z: number;
 }
 
+export interface CameraAngles {
+    alpha: number;
+    beta: number;
+}
+
 export interface GamepadState {
     moveVector: Vector;
     lookVector: Vector;
@@ -14,8 +19,7 @@ export interface GamepadState {
 export interface KeyboardState {
     moveVector: Vector;
     speedFactor: number;
-    cameraDeltaAlpha: number;
-    cameraDeltaBeta: number;
+    cameraDelta: CameraAngles;
 }
 
 export type MsgOffscreen = {

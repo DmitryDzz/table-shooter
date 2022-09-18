@@ -49,6 +49,8 @@ export abstract class GameScene extends Scene {
         this.cameraInput = new ArcRotateCameraWorkerInput(2, 2);
         this.camera.inputs.add(this.cameraInput);
         this.camera.attachControl("ArcRotateCameraWorkerInput");
+        // this.camera.inputs.attached.mouse.touchEnabled = true;
+        this.camera.inputs.removeByType("ArcRotateCameraTouchInput");
 
         this.light = new HemisphericLight('light', new Vector3(0, 1, 0), this);
 

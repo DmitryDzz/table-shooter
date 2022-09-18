@@ -111,7 +111,7 @@ export class Level1 extends GameScene {
     }
 
     setKeyboardState(state: KeyboardState): void {
-        this.cameraInput.setCameraDeltaRotation(state.cameraDeltaAlpha, state.cameraDeltaBeta);
+        this.cameraInput.setCameraDeltaRotation(state.cameraDelta.alpha, state.cameraDelta.beta);
         const cameraDirection = this.camera.getDirection(Vector3.Forward());
         this._player?.setInputState(state.moveVector, state.speedFactor, state.moveVector, true, cameraDirection);
     }

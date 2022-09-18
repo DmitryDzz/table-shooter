@@ -17,8 +17,8 @@ export class KeyboardInputManager implements InputManager {
     private _cameraDeltaAlpha: number = 0;
     private _cameraDeltaBeta: number = 0;
 
-    private _prevCtrlPressed?: boolean = undefined;
-    private _isPointerDown: boolean = false;
+    // private _prevCtrlPressed?: boolean = undefined;
+    private _isTouchablePointerDown?: boolean = undefined;
 
     constructor(worker: Worker) {
         this._worker = worker;
@@ -27,6 +27,7 @@ export class KeyboardInputManager implements InputManager {
         window.addEventListener("pointermove", this._pointerMoveHandler);
         window.addEventListener("pointerdown", this._pointerDownHandler);
         window.addEventListener("pointerup", this._pointerUpHandler);
+        window.addEventListener("contextmenu", this._contextMenuHandler);
     }
 
     // noinspection JSUnusedGlobalSymbols
@@ -36,6 +37,7 @@ export class KeyboardInputManager implements InputManager {
         window.removeEventListener("pointermove", this._pointerMoveHandler);
         window.removeEventListener("pointerdown", this._pointerDownHandler);
         window.removeEventListener("pointerup", this._pointerUpHandler);
+        window.removeEventListener("contextmenu", this._contextMenuHandler);
     }
 
     update() {
@@ -54,11 +56,15 @@ export class KeyboardInputManager implements InputManager {
                 state: {
                     moveVector,
                     speedFactor: this._isShiftPressed ? 1.0 : 0.5,
-                    cameraDeltaAlpha: this._cameraDeltaAlpha,
-                    cameraDeltaBeta: this._cameraDeltaBeta,
+                    cameraDelta: {
+                        alpha: this._cameraDeltaAlpha,
+                        beta: this._cameraDeltaBeta,
+                    },
                 },
             },
         };
+        this._cameraDeltaAlpha = 0;
+        this._cameraDeltaBeta = 0;
         // console.log(message.payload.state.moveVector, this._isShiftPressed);
         this._worker.postMessage(message);
     }
@@ -86,38 +92,56 @@ export class KeyboardInputManager implements InputManager {
         this._keyHandler(ev, false);
     };
 
-    private _pointerMoveHandler = (ev: PointerEvent) => {
-        if (this._isPointerDown) {
-            this._pointerHandler(ev);
-            this._cameraDeltaAlpha = -ev.movementX * KeyboardInputManager._p2rad;
-            this._cameraDeltaBeta = -ev.movementY * KeyboardInputManager._p2rad;
-        } else {
-            this._cameraDeltaAlpha = 0;
-            this._cameraDeltaBeta = 0;
-        }
-    }
+    // private _pointerHandler = (ev: PointerEvent) => {
+    //     const isCtrlPressed: boolean = ev.ctrlKey;
+    //     if (this._prevCtrlPressed === undefined) {
+    //         this._prevCtrlPressed = isCtrlPressed;
+    //         this._isCtrlPressed = isCtrlPressed;
+    //     } else {
+    //         if (isCtrlPressed !== this._prevCtrlPressed) {
+    //             this._prevCtrlPressed = isCtrlPressed;
+    //             this._isCtrlPressed = isCtrlPressed;
+    //             // console.log(`Ctrl: ${this._isCtrlPressed}`);
+    //         }
+    //     }
+    // };
 
-    private _pointerHandler = (ev: PointerEvent) => {
-        const isCtrlPressed: boolean = ev.ctrlKey;
-        if (this._prevCtrlPressed === undefined) {
-            this._prevCtrlPressed = isCtrlPressed;
-            this._isCtrlPressed = isCtrlPressed;
-        } else {
-            if (isCtrlPressed !== this._prevCtrlPressed) {
-                this._prevCtrlPressed = isCtrlPressed;
-                this._isCtrlPressed = isCtrlPressed;
-                // console.log(`Ctrl: ${this._isCtrlPressed}`);
-            }
+    private _previousMovePointerType?: string = undefined;
+
+    private _pointerMoveHandler = (ev: PointerEvent) => {
+        console.log(`%c MOVE(${ev.pointerType}) ${ev.movementX.toFixed()}, ${ev.movementY.toFixed()}`, "background: orange");
+        if (this._previousMovePointerType === undefined || (ev.pointerType !== this._previousMovePointerType)) {
+            this._previousMovePointerType = ev.pointerType;
+            return;
         }
-    }
+        if (this._isTouchablePointerDown === false) {
+            this._isTouchablePointerDown = undefined;
+            return;
+        }
+        this._cameraDeltaAlpha = -ev.movementX * KeyboardInputManager._p2rad;
+        this._cameraDeltaBeta = -ev.movementY * KeyboardInputManager._p2rad;
+    };
 
     private _pointerDownHandler = (ev: PointerEvent) => {
-        this._isPointerDown = true;
-        this._pointerHandler(ev);
-    }
+        console.log(`%c DOWN(${ev.pointerType}) ${ev.movementX.toFixed()}, ${ev.movementY.toFixed()}`, "background: lime");
+        if (ev.pointerType === "touch" || ev.pointerType === "pen") {
+            this._isTouchablePointerDown = true;
+        }
+    };
 
     private _pointerUpHandler = (ev: PointerEvent) => {
-        this._isPointerDown = false;
-        this._pointerHandler(ev);
-    }
+        console.log(`%c UP(${ev.pointerType}) ${ev.movementX.toFixed()}, ${ev.movementY.toFixed()}`, "background: coral");
+        if (ev.pointerType === "touch" || ev.pointerType === "pen") {
+            this._isTouchablePointerDown = false;
+        }
+        // this._pointerHandler(ev);
+        this._cameraDeltaAlpha = 0;
+        this._cameraDeltaBeta = 0;
+    };
+
+    private _contextMenuHandler = (ev: PointerEvent) => {
+        if (ev.pointerType !== "mouse") {
+            ev.preventDefault();
+        }
+    };
 }
