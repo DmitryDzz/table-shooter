@@ -12,10 +12,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ArcRotateCameraWorkerInput": () => (/* binding */ ArcRotateCameraWorkerInput)
 /* harmony export */ });
+/* harmony import */ var _env__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./env */ "./src/babylon/env.ts");
+
 class ArcRotateCameraWorkerInput {
     static _epsilon = 0.2;
-    static _minBeta = Math.PI / 18; // 10 degrees
-    static _maxBeta = Math.PI * 99 / 199; // almost PI/2
     _maxAlphaSpeed;
     _maxBetaSpeed;
     _engine = null;
@@ -50,12 +50,15 @@ class ArcRotateCameraWorkerInput {
         const speedAlpha = Math.abs(factors.alpha) < ArcRotateCameraWorkerInput._epsilon
             ? 0
             : this._maxAlphaSpeed * factors.alpha;
-        this.camera.alpha += speedAlpha * deltaTime;
         const speedBeta = Math.abs(factors.beta) < ArcRotateCameraWorkerInput._epsilon
             ? 0
             : this._maxBetaSpeed * factors.beta;
-        const newBeta = this.camera.beta - speedBeta * deltaTime;
-        this.camera.beta = Math.min(Math.max(newBeta, ArcRotateCameraWorkerInput._minBeta), ArcRotateCameraWorkerInput._maxBeta);
+        this.setCameraDeltaRotation(speedAlpha * deltaTime, -speedBeta * deltaTime);
+    }
+    setCameraDeltaRotation(deltaAlpha, deltaBeta) {
+        this.camera.alpha += deltaAlpha;
+        const newBeta = this.camera.beta + deltaBeta;
+        this.camera.beta = Math.min(Math.max(newBeta, _env__WEBPACK_IMPORTED_MODULE_0__.Env.camera.minBeta), _env__WEBPACK_IMPORTED_MODULE_0__.Env.camera.maxBeta);
     }
 }
 
@@ -135,6 +138,8 @@ class Env {
     static camera = {
         near: 0.2,
         far: 10000,
+        minBeta: Math.PI / 18,
+        maxBeta: Math.PI * 99 / 199,
         position: { x: 0, y: 20, z: -30 },
         defaultDirection: { x: 0, y: 0, z: 0 }
     };
@@ -191,6 +196,8 @@ class GameScene extends _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Scene {
         this.cameraInput = new _ArcRotateCameraWorkerInput__WEBPACK_IMPORTED_MODULE_3__.ArcRotateCameraWorkerInput(2, 2);
         this.camera.inputs.add(this.cameraInput);
         this.camera.attachControl("ArcRotateCameraWorkerInput");
+        // this.camera.inputs.attached.mouse.touchEnabled = true;
+        this.camera.inputs.removeByType("ArcRotateCameraTouchInput");
         this.light = new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.HemisphericLight('light', new _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Vector3(0, 1, 0), this);
         // 3D Environment
         const environment = this.createDefaultEnvironment({
@@ -299,11 +306,16 @@ class Level1 extends _gameScene__WEBPACK_IMPORTED_MODULE_1__.GameScene {
     }
     setGamepadState(state) {
         this.cameraInput.cameraRotationSpeedFactors = {
-            alpha: state.bumperPressed ? state.lookVector.x : 0,
-            beta: state.bumperPressed ? state.lookVector.z : 0,
+            alpha: state.isCameraLookVector ? state.lookVector.x : 0,
+            beta: state.isCameraLookVector ? state.lookVector.z : 0,
         };
         const cameraDirection = this.camera.getDirection(_babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Vector3.Forward());
-        this._player?.setGamepadState(state, cameraDirection);
+        this._player?.setInputState(state.moveVector, 1, state.lookVector, state.isCameraLookVector, cameraDirection);
+    }
+    setKeyboardState(state) {
+        this.cameraInput.setCameraDeltaRotation(state.cameraDelta.alpha, state.cameraDelta.beta);
+        const cameraDirection = this.camera.getDirection(_babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Vector3.Forward());
+        this._player?.setInputState(state.moveVector, state.speedFactor, state.moveVector, true, cameraDirection);
     }
 }
 
@@ -335,6 +347,8 @@ class Level2 extends _gameScene__WEBPACK_IMPORTED_MODULE_1__.GameScene {
     async initializeAsync() {
     }
     setGamepadState(_state) {
+    }
+    setKeyboardState(_state) {
     }
 }
 
@@ -421,17 +435,18 @@ class Player {
     _lengthSquared(v) {
         return v.x * v.x + v.y * v.y + v.z * v.z;
     }
-    setGamepadState({ moveVector, lookVector, bumperPressed }, cameraDirection) {
+    setInputState(moveVector, speedFactor, lookVector, isCameraLookVector, cameraDirection) {
         if (this._mesh?.physicsImpostor === undefined)
             return;
         cameraDirection.y = 0;
         cameraDirection.normalize();
         const cameraQuaternion = _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Quaternion.FromLookDirectionLH(cameraDirection, _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Vector3.Up());
+        // console.log(`++++ x: ${moveVector.x.toFixed(2)}, y: ${moveVector.y.toFixed(2)}, z: ${moveVector.z.toFixed(2)}`); //TODO DZZ
         // console.log(`++++ x: ${cameraDirection.x.toFixed(2)}, y: ${cameraDirection.y.toFixed(2)}, z: ${cameraDirection.z.toFixed(2)}`); //TODO DZZ
         const mv = (0,_math__WEBPACK_IMPORTED_MODULE_1__.createVector3)({ x: moveVector.x, y: moveVector.y, z: moveVector.z });
         const lv = (0,_math__WEBPACK_IMPORTED_MODULE_1__.createVector3)({ x: lookVector.x, y: lookVector.y, z: lookVector.z });
         const isMoving = this._lengthSquared(mv) > 0.01;
-        const isFacing = !bumperPressed && this._lengthSquared(lv) > 0.01;
+        const isFacing = !isCameraLookVector && this._lengthSquared(lv) > 0.01;
         let faceVector = null;
         if (isFacing)
             faceVector = lv.clone();
@@ -446,7 +461,7 @@ class Player {
             this._mesh.rotationQuaternion = _babylonjs_core__WEBPACK_IMPORTED_MODULE_0__.Quaternion.Slerp(this._mesh.rotationQuaternion, toQuaternion, speed * this._scene.deltaTime);
         }
         const speedValue = 0.25;
-        const velocity = mv.clone().applyRotationQuaternion(cameraQuaternion).scale(speedValue);
+        const velocity = mv.clone().applyRotationQuaternion(cameraQuaternion).scale(speedValue * speedFactor);
         this._mesh.physicsImpostor.friction = isMoving ? 0 : 1000000;
         if (isMoving) {
             this._mesh.physicsImpostor.setLinearVelocity(velocity);
@@ -544,6 +559,12 @@ scope.onmessage = async (ev) => {
             const msgGamepad = ev.data;
             if (appInitializer.currentScene !== null) {
                 appInitializer.currentScene.setGamepadState(msgGamepad.payload.state);
+            }
+            break;
+        case "keyboard":
+            const msgKeyboard = ev.data;
+            if (appInitializer.currentScene !== null) {
+                appInitializer.currentScene.setKeyboardState(msgKeyboard.payload.state);
             }
             break;
     }
@@ -781,4 +802,4 @@ module.exports = "assets/48406d8fa1350aa1f3b4.glb";
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=main-ab490f3ad9314061935e.js.map
+//# sourceMappingURL=main-3c4b2a72918f38ca3dfb.js.map

@@ -21,7 +21,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_sourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "html, body, div, canvas {\n    margin: 0;\n    padding: 0;\n    overflow: hidden;\n}", "",{"version":3,"sources":["webpack://./public/index.css"],"names":[],"mappings":"AAAA;IACI,SAAS;IACT,UAAU;IACV,gBAAgB;AACpB","sourcesContent":["html, body, div, canvas {\n    margin: 0;\n    padding: 0;\n    overflow: hidden;\n}"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "html, body, div, canvas {\n    margin: 0;\n    padding: 0;\n    overflow: hidden;\n    touch-action: none;\n}", "",{"version":3,"sources":["webpack://./public/index.css"],"names":[],"mappings":"AAAA;IACI,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,kBAAkB;AACtB","sourcesContent":["html, body, div, canvas {\n    margin: 0;\n    padding: 0;\n    overflow: hidden;\n    touch-action: none;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -489,6 +489,7 @@ __webpack_require__.r(__webpack_exports__);
 class GamepadInputManager {
     static _triggerPressedBound = 0.00001;
     _worker;
+    _isConnected = false;
     constructor(worker) {
         this._worker = worker;
         window.addEventListener("gamepadconnected", this._gamepadConnectedHandler);
@@ -509,9 +510,11 @@ class GamepadInputManager {
         this._worker.postMessage(message);
     }
     _gamepadConnectedHandler = (_ev) => {
+        this._isConnected = true;
         console.info("Gamepad connected");
     };
     _gamepadDisconnectedHandler = (_ev) => {
+        this._isConnected = false;
         console.info("Gamepad disconnected");
     };
     _readGamepads() {
@@ -549,7 +552,10 @@ class GamepadInputManager {
         const lookVector = axes.length >= 4
             ? { x: -axes[2], y: 0, z: axes[3] }
             : { x: 0, y: 0, z: 0 };
-        return { moveVector, lookVector, bumperPressed, triggerPressed };
+        return { moveVector, lookVector, isCameraLookVector: bumperPressed, triggerPressed };
+    }
+    get inUse() {
+        return this._isConnected;
     }
 }
 
@@ -567,26 +573,132 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "KeyboardInputManager": () => (/* binding */ KeyboardInputManager)
 /* harmony export */ });
 class KeyboardInputManager {
+    static _p2rad = 0.01;
     _worker;
+    _isForward;
+    _isBackward;
+    _isLeft;
+    _isRight;
+    _isShiftPressed;
+    _isCtrlPressed;
+    _cameraDeltaAlpha = 0;
+    _cameraDeltaBeta = 0;
+    // private _prevCtrlPressed?: boolean = undefined;
+    _isTouchablePointerDown = undefined;
     constructor(worker) {
         this._worker = worker;
-        // window.addEventListener("gamepadconnected", this._gamepadConnectedHandler);
-        // window.addEventListener("gamepaddisconnected", this._gamepadDisconnectedHandler);
+        window.addEventListener("keydown", this._keydownHandler);
+        window.addEventListener("keyup", this._keyupHandler);
+        window.addEventListener("pointermove", this._pointerMoveHandler);
+        window.addEventListener("pointerdown", this._pointerDownHandler);
+        window.addEventListener("pointerup", this._pointerUpHandler);
+        window.addEventListener("contextmenu", this._contextMenuHandler);
     }
     // noinspection JSUnusedGlobalSymbols
     dispose() {
-        // window.removeEventListener("gamepadconnected", this._gamepadConnectedHandler);
-        // window.removeEventListener("gamepaddisconnected", this._gamepadDisconnectedHandler);
+        window.removeEventListener("keydown", this._keydownHandler);
+        window.removeEventListener("keyup", this._keyupHandler);
+        window.removeEventListener("pointermove", this._pointerMoveHandler);
+        window.removeEventListener("pointerdown", this._pointerDownHandler);
+        window.removeEventListener("pointerup", this._pointerUpHandler);
+        window.removeEventListener("contextmenu", this._contextMenuHandler);
     }
     update() {
-        // const message: MsgGamepad = {
-        //     type: "gamepad",
-        //     payload: {
-        //         state: this._readGamepads(),
-        //     },
-        // };
-        // this._worker.postMessage(message);
+        const moveVector = { x: 0, y: 0, z: 0 };
+        if (this._isForward)
+            moveVector.z -= 1.0;
+        if (this._isBackward)
+            moveVector.z += 1.0;
+        if (this._isLeft)
+            moveVector.x += 1.0;
+        if (this._isRight)
+            moveVector.x -= 1.0;
+        const message = {
+            type: "keyboard",
+            payload: {
+                state: {
+                    moveVector,
+                    speedFactor: this._isShiftPressed ? 1.0 : 0.5,
+                    cameraDelta: {
+                        alpha: this._cameraDeltaAlpha,
+                        beta: this._cameraDeltaBeta,
+                    },
+                },
+            },
+        };
+        this._cameraDeltaAlpha = 0;
+        this._cameraDeltaBeta = 0;
+        // console.log(message.payload.state.moveVector, this._isShiftPressed);
+        this._worker.postMessage(message);
     }
+    get inUse() {
+        return this._isForward || this._isBackward || this._isLeft || this._isRight ||
+            this._isShiftPressed || this._isCtrlPressed;
+    }
+    _keyHandler = (ev, isDown) => {
+        const lowerKey = ev.key.toLowerCase();
+        const isLowerCase = lowerKey === ev.key;
+        if (lowerKey === "w")
+            this._isForward = isDown;
+        if (lowerKey === "s")
+            this._isBackward = isDown;
+        if (lowerKey === "a")
+            this._isLeft = isDown;
+        if (lowerKey === "d")
+            this._isRight = isDown;
+        if (!isLowerCase)
+            this._isShiftPressed = isDown;
+    };
+    _keydownHandler = (ev) => {
+        this._keyHandler(ev, true);
+    };
+    _keyupHandler = (ev) => {
+        this._keyHandler(ev, false);
+    };
+    // private _pointerHandler = (ev: PointerEvent) => {
+    //     const isCtrlPressed: boolean = ev.ctrlKey;
+    //     if (this._prevCtrlPressed === undefined) {
+    //         this._prevCtrlPressed = isCtrlPressed;
+    //         this._isCtrlPressed = isCtrlPressed;
+    //     } else {
+    //         if (isCtrlPressed !== this._prevCtrlPressed) {
+    //             this._prevCtrlPressed = isCtrlPressed;
+    //             this._isCtrlPressed = isCtrlPressed;
+    //             // console.log(`Ctrl: ${this._isCtrlPressed}`);
+    //         }
+    //     }
+    // };
+    _previousMovePointerType = undefined;
+    _pointerMoveHandler = (ev) => {
+        if (this._previousMovePointerType === undefined || (ev.pointerType !== this._previousMovePointerType)) {
+            this._previousMovePointerType = ev.pointerType;
+            return;
+        }
+        if (this._isTouchablePointerDown === false) {
+            this._isTouchablePointerDown = undefined;
+            return;
+        }
+        this._cameraDeltaAlpha = -ev.movementX * KeyboardInputManager._p2rad;
+        this._cameraDeltaBeta = -ev.movementY * KeyboardInputManager._p2rad;
+    };
+    _pointerDownHandler = (ev) => {
+        if (ev.pointerType === "touch" || ev.pointerType === "pen") {
+            this._isTouchablePointerDown = true;
+        }
+    };
+    _pointerUpHandler = (ev) => {
+        if (ev.pointerType === "touch" || ev.pointerType === "pen") {
+            this._isTouchablePointerDown = false;
+        }
+        // this._pointerHandler(ev);
+        this._cameraDeltaAlpha = 0;
+        this._cameraDeltaBeta = 0;
+    };
+    _contextMenuHandler = (ev) => {
+        if (ev.pointerType !== "mouse") {
+            ev.preventDefault();
+        }
+    };
 }
 
 
@@ -651,7 +763,7 @@ class KeyboardInputManager {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "main-" + "ab490f3ad9314061935e" + ".js";
+/******/ 			return "main-" + "3c4b2a72918f38ca3dfb" + ".js";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -750,7 +862,7 @@ __webpack_require__.r(__webpack_exports__);
 class App {
     worker;
     constructor() {
-        console.log(`%c Table Shooter App (v${"1.0.5"}) `, "background: lime");
+        console.log(`%c Table Shooter App (v${"1.0.6"}) `, "background: lime");
         // create the canvas html element and attach it to the webpage
         const canvas = document.createElement("canvas");
         canvas.style.width = "100%";
@@ -797,14 +909,12 @@ class App {
     }
 }
 const app = new App();
-const inputManagers = [
-    new _input_keyboardInputManager__WEBPACK_IMPORTED_MODULE_1__.KeyboardInputManager(app.worker),
-    new _input_gamepadInputManager__WEBPACK_IMPORTED_MODULE_0__.GamepadInputManager(app.worker),
-];
+const keyboardInputManager = new _input_keyboardInputManager__WEBPACK_IMPORTED_MODULE_1__.KeyboardInputManager(app.worker);
+const gamepadInputManager = new _input_gamepadInputManager__WEBPACK_IMPORTED_MODULE_0__.GamepadInputManager(app.worker);
 const updateHandler = () => {
-    for (let inputManager of inputManagers) {
-        inputManager.update();
-    }
+    keyboardInputManager.update();
+    if (!keyboardInputManager.inUse)
+        gamepadInputManager.update();
     requestAnimationFrame(updateHandler);
 };
 updateHandler();
@@ -865,4 +975,4 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 /******/ })()
 ;
-//# sourceMappingURL=main-9de6c90d07621cbdd028.js.map
+//# sourceMappingURL=main-240439cb2586ea759479.js.map
