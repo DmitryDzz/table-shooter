@@ -18,7 +18,7 @@ export class KeyboardInputManager implements InputManager {
     private _cameraDeltaBeta: number = 0;
 
     // private _prevCtrlPressed?: boolean = undefined;
-    private _isTouchablePointerDown?: boolean = undefined;
+    private _isPointerDown: boolean = false;
 
     constructor(worker: Worker) {
         this._worker = worker;
@@ -76,20 +76,26 @@ export class KeyboardInputManager implements InputManager {
 
     private _keyHandler = (ev: KeyboardEvent, isDown: boolean) => {
         const lowerKey = ev.key.toLowerCase();
-        const isLowerCase = lowerKey === ev.key;
+        // const isLowerCase = lowerKey === ev.key;
         if (lowerKey === "w") this._isForward = isDown;
         if (lowerKey === "s") this._isBackward = isDown;
         if (lowerKey === "a") this._isLeft = isDown;
         if (lowerKey === "d") this._isRight = isDown;
-        if (!isLowerCase) this._isShiftPressed = isDown;
+        // if (!isLowerCase) this._isShiftPressed = isDown;
+    };
+
+    private _shiftHandler = (ev: KeyboardEvent | PointerEvent) => {
+        this._isShiftPressed = ev.shiftKey;
     };
 
     private _keydownHandler = (ev: KeyboardEvent) => {
         this._keyHandler(ev, true);
+        this._shiftHandler(ev);
     };
 
     private _keyupHandler = (ev: KeyboardEvent) => {
         this._keyHandler(ev, false);
+        this._shiftHandler(ev);
     };
 
     // private _pointerHandler = (ev: PointerEvent) => {
@@ -106,35 +112,19 @@ export class KeyboardInputManager implements InputManager {
     //     }
     // };
 
-    private _previousMovePointerType?: string = undefined;
-
     private _pointerMoveHandler = (ev: PointerEvent) => {
-        console.log(`%c MOVE(${ev.pointerType}) ${ev.movementX.toFixed()}, ${ev.movementY.toFixed()}`, "background: orange");
-        if (this._previousMovePointerType === undefined || (ev.pointerType !== this._previousMovePointerType)) {
-            this._previousMovePointerType = ev.pointerType;
-            return;
-        }
-        if (this._isTouchablePointerDown === false) {
-            this._isTouchablePointerDown = undefined;
-            return;
-        }
+        if (!this._isPointerDown) return;
+        this._shiftHandler(ev);
         this._cameraDeltaAlpha = -ev.movementX * KeyboardInputManager._p2rad;
         this._cameraDeltaBeta = -ev.movementY * KeyboardInputManager._p2rad;
     };
 
     private _pointerDownHandler = (ev: PointerEvent) => {
-        console.log(`%c DOWN(${ev.pointerType}) ${ev.movementX.toFixed()}, ${ev.movementY.toFixed()}`, "background: lime");
-        if (ev.pointerType === "touch" || ev.pointerType === "pen") {
-            this._isTouchablePointerDown = true;
-        }
+        this._isPointerDown = true;
     };
 
     private _pointerUpHandler = (ev: PointerEvent) => {
-        console.log(`%c UP(${ev.pointerType}) ${ev.movementX.toFixed()}, ${ev.movementY.toFixed()}`, "background: coral");
-        if (ev.pointerType === "touch" || ev.pointerType === "pen") {
-            this._isTouchablePointerDown = false;
-        }
-        // this._pointerHandler(ev);
+        this._isPointerDown = false;
         this._cameraDeltaAlpha = 0;
         this._cameraDeltaBeta = 0;
     };
