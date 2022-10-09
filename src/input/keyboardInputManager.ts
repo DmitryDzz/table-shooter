@@ -75,13 +75,11 @@ export class KeyboardInputManager implements InputManager {
     }
 
     private _keyHandler = (ev: KeyboardEvent, isDown: boolean) => {
-        const lowerKey = ev.key.toLowerCase();
-        // const isLowerCase = lowerKey === ev.key;
-        if (lowerKey === "w") this._isForward = isDown;
-        if (lowerKey === "s") this._isBackward = isDown;
-        if (lowerKey === "a") this._isLeft = isDown;
-        if (lowerKey === "d") this._isRight = isDown;
-        // if (!isLowerCase) this._isShiftPressed = isDown;
+        const keyCode = ev.code;
+        if (keyCode === "KeyW") this._isForward = isDown;
+        if (keyCode === "KeyS") this._isBackward = isDown;
+        if (keyCode === "KeyA") this._isLeft = isDown;
+        if (keyCode === "KeyD") this._isRight = isDown;
     };
 
     private _shiftHandler = (ev: KeyboardEvent | PointerEvent) => {
